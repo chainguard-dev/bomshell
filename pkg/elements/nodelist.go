@@ -68,3 +68,58 @@ func (nl NodeList) Type() ref.Type {
 func (nl NodeList) Value() interface{} {
 	return nl
 }
+
+func (nl NodeList) Add(incoming ref.Val) {
+	if newNodeList, ok := incoming.(NodeList); ok {
+		// return types.NewErr("attemtp to convert a non node")
+		for _, n := range newNodeList.Nodes {
+			if !nl.HasNodeWithID(n.Id) {
+				nl.Nodes = append(nl.Nodes, n)
+			}
+		}
+
+		for _, e := range newNodeList.Edges {
+			nl.AddEdge(e.From, e.Type, e.To)
+		}
+	}
+	return
+}
+
+// AddEsge adds edge data to
+func (nl NodeList) AddEdge(from string, t sbom.Edge_Type, to []string) {
+	for i := range nl.Edges {
+		// If there is already an edge with the same data, just add
+		if nl.Edges[i].From == from && nl.Edges[i].Type == t {
+			for _, newTo := range to {
+				add := true
+				for _, existingTo := range nl.Edges[i].To {
+					if existingTo == newTo {
+						add = false
+						break
+					}
+				}
+				if !add {
+					continue
+				}
+				nl.Edges[i].To = append(nl.Edges[i].To, newTo)
+			}
+			return
+		}
+	}
+	// .. otherwise add a new edge
+	nl.Edges = append(nl.Edges, &sbom.Edge{
+		Type: t,
+		From: from,
+		To:   to,
+	})
+}
+
+// HasNodeWithID Returns true if the NodeList already has a node with the specified ID
+func (nl NodeList) HasNodeWithID(nodeID string) bool {
+	for _, n := range nl.Nodes {
+		if n.Id == nodeID {
+			return true
+		}
+	}
+	return false
+}

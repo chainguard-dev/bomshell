@@ -15,7 +15,8 @@ const (
 )
 
 type Options struct {
-	SBOM *sbom.Document
+	SBOM         *sbom.Document
+	OutputFormat string
 }
 
 var defaultOptions = Options{}
@@ -84,6 +85,11 @@ func (bs *BomShell) Run(code string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("value: %v (%T)\n", result.Value(), result)
+
+	if result != nil {
+		fmt.Printf("value: %v (%T)\n", result.Value(), result)
+	} else {
+		fmt.Printf("result is nil\n")
+	}
 	return nil
 }

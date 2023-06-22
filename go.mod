@@ -5,9 +5,15 @@ go 1.20
 require (
 	github.com/bom-squad/protobom v0.0.0-20230608203144-2703e92cb1b6
 	github.com/sirupsen/logrus v1.9.2
+	github.com/stretchr/testify v1.8.2
 )
 
-require github.com/onesbom/onesbom v0.0.0-20230531045741-b772339fa7cf // indirect
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/onesbom/onesbom v0.0.0-20230531045741-b772339fa7cf // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
+)
 
 require (
 	github.com/antlr/antlr4/runtime/Go/antlr/v4 v4.0.0-20230305170008-8188dc5388df // indirect
@@ -18,5 +24,5 @@ require (
 	golang.org/x/text v0.8.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20230525234035-dd9d682886f9 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230525234030-28d5490b6b19 // indirect
-	google.golang.org/protobuf v1.30.0
+	google.golang.org/protobuf v1.30.0 // indirect
 )
