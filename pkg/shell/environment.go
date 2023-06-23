@@ -3,7 +3,6 @@ package shell
 import (
 	"fmt"
 
-	"github.com/bom-squad/protobom/pkg/sbom"
 	"github.com/chainguard-dev/bomshell/pkg/elements"
 	"github.com/chainguard-dev/bomshell/pkg/functions"
 	"github.com/google/cel-go/cel"
@@ -20,11 +19,12 @@ type shellLibrary struct{}
 // use to compile and evaluate programs on the SBOM
 func (shellLibrary) CompileOptions() []cel.EnvOption {
 	return []cel.EnvOption{
-		cel.Types(&sbom.Document{}),
-		cel.Types(&sbom.NodeList{}),
+		cel.Types(&elements.Document{}),
+		cel.Types(&elements.NodeList{}),
 
 		cel.Variable("sbom",
-			cel.ObjectType(protoDocumentType),
+			// cel.ObjectType(protoDocumentType),
+			elements.DocumentType,
 		),
 
 		cel.Function(
@@ -79,10 +79,10 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 			),
 		*/
 		cel.Function(
-			"elementbyid",
+			"NodeByID",
 			cel.MemberOverload(
 				"sbom_elementbyid_binding", []*cel.Type{cel.ObjectType(protoDocumentType), cel.StringType}, elements.NodeType,
-				cel.BinaryBinding(functions.ElementById),
+				cel.BinaryBinding(functions.NodeById),
 			),
 		),
 	}
