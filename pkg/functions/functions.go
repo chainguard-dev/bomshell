@@ -5,6 +5,7 @@ import (
 	"github.com/chainguard-dev/bomshell/pkg/elements"
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // NodeToNodeList takes a node and returns a new NodeList
@@ -31,7 +32,7 @@ var AdditionOp = func(vals ...ref.Val) ref.Val {
 }
 
 // ElementById returns a Node matching with the specified ID
-var ElementById = func(lhs, rawID ref.Val) ref.Val {
+var NodeById = func(lhs, rawID ref.Val) ref.Val {
 	queryID, ok := rawID.Value().(string)
 	if !ok {
 		return types.NewErr("argument to element by id has to be a string")
@@ -41,14 +42,15 @@ var ElementById = func(lhs, rawID ref.Val) ref.Val {
 	if !ok {
 		return types.NewErr("unable to convert sbom to native (wrong type?)")
 	}
-	for _, n := range bom.Nodes {
-		if n.Id == queryID {
-			return elements.Node{
-				Node: n,
-			}
-		}
+	node := bom.NodeList.GetNodeByID(queryID)
+	// Perhaps we shouls thrown an error here.
+	if node == nil {
+		return nil
 	}
-	return nil
+
+	return elements.Node{
+		Node: node,
+	}
 }
 
 var Files = func(lhs ref.Val) ref.Val {
@@ -59,8 +61,8 @@ var Files = func(lhs ref.Val) ref.Val {
 	if !ok {
 		return types.NewErr("unable to convert sbom to native (wrong type?)")
 	}
-	nl.Edges = bom.Edges
-	for _, n := range bom.Nodes {
+	nl.Edges = bom.NodeList.Edges
+	for _, n := range bom.NodeList.Nodes {
 		if n.Type == sbom.Node_FILE {
 			nl.NodeList.Nodes = append(nl.NodeList.Nodes, n)
 		}
@@ -77,12 +79,34 @@ var Packages = func(lhs ref.Val) ref.Val {
 	if !ok {
 		return types.NewErr("unable to convert sbom to native (wrong type?)")
 	}
-	nl.Edges = bom.Edges
-	for _, n := range bom.Nodes {
+	nl.Edges = bom.NodeList.Edges
+	for _, n := range bom.NodeList.Nodes {
 		if n.Type == sbom.Node_PACKAGE {
 			nl.NodeList.Nodes = append(nl.NodeList.Nodes, n)
 		}
 	}
 	cleanEdges(&nl)
 	return nl
+}
+
+var ToDocument = func(lhs, rhs ref.Val) ref.Val {
+	nl, ok := lhs.Value().(*sbom.NodeList)
+	if !ok {
+		return types.NewErr("documents can be created only from nodelists")
+	}
+	return elements.Document{
+		Document: &sbom.Document{
+			Metadata: &sbom.Metadata{
+				Id:      "",
+				Version: "",
+				Name:    "",
+				Date:    timestamppb.Now(),
+				Tools:   []*sbom.Tool{},
+				Authors: []*sbom.Person{},
+				Comment: "",
+			},
+			NodeList: nl,
+		},
+	}
+
 }

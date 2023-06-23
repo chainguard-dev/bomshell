@@ -82,7 +82,6 @@ func (nl NodeList) Add(incoming ref.Val) {
 			nl.AddEdge(e.From, e.Type, e.To)
 		}
 	}
-	return
 }
 
 // AddEsge adds edge data to
