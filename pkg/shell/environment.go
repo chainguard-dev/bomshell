@@ -85,6 +85,14 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 				cel.BinaryBinding(functions.NodeById),
 			),
 		),
+
+		cel.Function(
+			"ToDocument",
+			cel.MemberOverload(
+				"nodelist_todocument_binding", []*cel.Type{elements.NodeListType}, elements.DocumentType,
+				cel.UnaryBinding(functions.ToDocument),
+			),
+		),
 	}
 }
 func (shellLibrary) ProgramOptions() []cel.ProgramOption {

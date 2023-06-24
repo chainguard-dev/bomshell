@@ -3,7 +3,6 @@ package shell
 import (
 	"fmt"
 
-	"github.com/bom-squad/protobom/pkg/sbom"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/types/ref"
 )
@@ -46,17 +45,13 @@ func (r *Runner) Compile(code string) (*cel.Ast, error) {
 
 // EvaluateAST evaluates a CEL syntax tree on an SBOM. Returns the program
 // evaluation result or an error.
-func (r *Runner) EvaluateAST(ast *cel.Ast, doc *sbom.Document) (ref.Val, error) {
+func (r *Runner) EvaluateAST(ast *cel.Ast, variables map[string]interface{}) (ref.Val, error) {
 	program, err := r.Environment.Program(ast)
 	if err != nil {
 		return nil, fmt.Errorf("generating program from AST: %w", err)
 	}
 
-	val := map[string]interface{}{
-		"sbom": doc,
-	}
-
-	result, _, err := program.Eval(val)
+	result, _, err := program.Eval(variables)
 	if err != nil {
 		return nil, fmt.Errorf("evaluation error: %w", err)
 	}

@@ -1,25 +1,25 @@
 package shell
 
 import (
-	"errors"
 	"fmt"
-	"io"
 	"os"
 
-	"github.com/bom-squad/protobom/pkg/reader"
-	"github.com/bom-squad/protobom/pkg/sbom"
+	"github.com/bom-squad/protobom/pkg/formats"
 )
 
 const (
 	protoDocumentType = "bomsquad.protobom.Document"
+	DefaultFormat     = formats.SPDX23JSON
 )
 
 type Options struct {
-	SBOM         *sbom.Document
-	OutputFormat string
+	SBOM   string
+	Format formats.Format
 }
 
-var defaultOptions = Options{}
+var defaultOptions = Options{
+	Format: DefaultFormat,
+}
 
 type BomShell struct {
 	Options Options
@@ -43,26 +43,6 @@ func NewWithOptions(opts Options) (*BomShell, error) {
 	}, nil
 }
 
-func (bs *BomShell) LoadSBOM(stream io.ReadSeekCloser) error {
-	r := reader.New()
-	doc, err := r.ParseReader(stream)
-	if err != nil {
-		return fmt.Errorf("parsing SBOM: %w", err)
-	}
-
-	bs.Options.SBOM = doc
-	return nil
-}
-
-func (bs *BomShell) OpenSBOM(path string) error {
-	f, err := os.Open(path)
-	if err != nil {
-		return fmt.Errorf("opening SBOM file: %w", err)
-	}
-	defer f.Close()
-	return bs.LoadSBOM(f)
-}
-
 func (bs *BomShell) RunFile(path string) error {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -72,18 +52,32 @@ func (bs *BomShell) RunFile(path string) error {
 }
 
 func (bs *BomShell) Run(code string) error {
-	if bs.Options.SBOM == nil {
-		return errors.New("unable to run code, no SBOM has been loaded")
+	// Variables that wil be made available in the CEL env
+	vars := map[string]interface{}{}
+
+	// Load an SBNOM if defined
+	if bs.Options.SBOM != "" {
+		f, err := bs.impl.OpenFile(bs.Options.SBOM)
+		if err != nil {
+			return fmt.Errorf("opening SBOM file: %w", err)
+		}
+
+		doc, err := bs.impl.LoadSBOM(f)
+		if err != nil {
+			return fmt.Errorf("loading SBOM: %w", err)
+		}
+
+		vars["sbom"] = doc
 	}
 
-	ast, err := bs.runner.Compile(code)
+	ast, err := bs.impl.Compile(bs.runner, code)
 	if err != nil {
 		return fmt.Errorf("compiling program: %w", err)
 	}
 
-	result, err := bs.runner.EvaluateAST(ast, bs.Options.SBOM)
+	result, err := bs.impl.Evaluate(bs.runner, ast, vars)
 	if err != nil {
-		return err
+		return fmt.Errorf("evaluating: %w", err)
 	}
 
 	if result != nil {
