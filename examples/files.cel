@@ -1,1 +1,1 @@
-sbom.files()
+sbom.packages().ToDocument()

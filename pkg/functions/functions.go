@@ -89,23 +89,28 @@ var Packages = func(lhs ref.Val) ref.Val {
 	return nl
 }
 
-var ToDocument = func(lhs, rhs ref.Val) ref.Val {
-	nl, ok := lhs.Value().(*sbom.NodeList)
-	if !ok {
+var ToDocument = func(lhs ref.Val) ref.Val {
+	if lhs.Type() != elements.NodeListTypeValue {
 		return types.NewErr("documents can be created only from nodelists")
 	}
 	return elements.Document{
 		Document: &sbom.Document{
 			Metadata: &sbom.Metadata{
 				Id:      "",
-				Version: "",
+				Version: "1",
 				Name:    "",
 				Date:    timestamppb.Now(),
-				Tools:   []*sbom.Tool{},
+				Tools: []*sbom.Tool{
+					{
+						Name:    "bomshell",
+						Version: "0.0.1",
+						Vendor:  "Chainguard",
+					},
+				},
 				Authors: []*sbom.Person{},
 				Comment: "",
 			},
-			NodeList: nl,
+			NodeList: lhs.Value().(*sbom.NodeList),
 		},
 	}
 
