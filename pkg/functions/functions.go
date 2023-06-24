@@ -37,13 +37,16 @@ var NodeById = func(lhs, rawID ref.Val) ref.Val {
 	if !ok {
 		return types.NewErr("argument to element by id has to be a string")
 	}
-
-	bom, ok := lhs.Value().(*sbom.Document)
-	if !ok {
-		return types.NewErr("unable to convert sbom to native (wrong type?)")
+	var node *sbom.Node
+	switch v := lhs.Value().(type) {
+	case *sbom.Document:
+		node = v.NodeList.GetNodeByID(queryID)
+	case *sbom.NodeList:
+		node = v.GetNodeByID(queryID)
+	default:
+		return types.NewErr("method unsupported on type %T", lhs.Value())
 	}
-	node := bom.NodeList.GetNodeByID(queryID)
-	// Perhaps we shouls thrown an error here.
+
 	if node == nil {
 		return nil
 	}

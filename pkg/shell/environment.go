@@ -81,7 +81,11 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 		cel.Function(
 			"NodeByID",
 			cel.MemberOverload(
-				"sbom_elementbyid_binding", []*cel.Type{cel.ObjectType(protoDocumentType), cel.StringType}, elements.NodeType,
+				"sbom_elementbyid_binding", []*cel.Type{elements.DocumentType, cel.StringType}, elements.NodeType,
+				cel.BinaryBinding(functions.NodeById),
+			),
+			cel.MemberOverload(
+				"nodelist_elementbyid_binding", []*cel.Type{elements.NodeListType, cel.StringType}, elements.NodeType,
 				cel.BinaryBinding(functions.NodeById),
 			),
 		),
