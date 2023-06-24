@@ -66,7 +66,7 @@ func (nl NodeList) Type() ref.Type {
 
 // Value implements ref.Val.Value.
 func (nl NodeList) Value() interface{} {
-	return nl
+	return nl.NodeList
 }
 
 func (nl NodeList) Add(incoming ref.Val) {
