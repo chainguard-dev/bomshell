@@ -1,0 +1,1 @@
+cel.bind(sbom, LoadSBOM("/home/urbano/Projects/bomsquad/protobom/examples/curl.spdx.json"), sbom)
