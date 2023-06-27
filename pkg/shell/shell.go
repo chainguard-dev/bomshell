@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/bom-squad/protobom/pkg/formats"
+	"github.com/bom-squad/protobom/pkg/sbom"
 )
 
 const (
@@ -86,4 +87,18 @@ func (bs *BomShell) Run(code string) error {
 		fmt.Printf("result is nil\n")
 	}
 	return nil
+}
+
+func (bs *BomShell) LoadSBOM(path string) (*sbom.Document, error) {
+	f, err := bs.impl.OpenFile(bs.Options.SBOM)
+	if err != nil {
+		return nil, fmt.Errorf("opening SBOM file: %w", err)
+	}
+
+	doc, err := bs.impl.LoadSBOM(f)
+	if err != nil {
+		return nil, fmt.Errorf("loading SBOM: %w", err)
+	}
+
+	return doc, nil
 }
