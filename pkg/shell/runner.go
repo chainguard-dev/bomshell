@@ -46,7 +46,7 @@ func (r *Runner) Compile(code string) (*cel.Ast, error) {
 // EvaluateAST evaluates a CEL syntax tree on an SBOM. Returns the program
 // evaluation result or an error.
 func (r *Runner) EvaluateAST(ast *cel.Ast, variables map[string]interface{}) (ref.Val, error) {
-	program, err := r.Environment.Program(ast)
+	program, err := r.Environment.Program(ast, cel.EvalOptions(cel.OptOptimize))
 	if err != nil {
 		return nil, fmt.Errorf("generating program from AST: %w", err)
 	}

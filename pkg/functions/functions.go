@@ -1,8 +1,11 @@
 package functions
 
 import (
+	"os"
+
 	"github.com/bom-squad/protobom/pkg/sbom"
 	"github.com/chainguard-dev/bomshell/pkg/elements"
+	"github.com/chainguard-dev/bomshell/pkg/loader"
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -116,5 +119,24 @@ var ToDocument = func(lhs ref.Val) ref.Val {
 			NodeList: lhs.Value().(*sbom.NodeList),
 		},
 	}
+}
 
+var LoadSBOM = func(pathVal ref.Val) ref.Val {
+	path, ok := pathVal.Value().(string)
+	if !ok {
+		return types.NewErr("argument to element by id has to be a string")
+	}
+
+	f, err := os.Open(path)
+	if err != nil {
+		return types.NewErr("opening SBOM file: %w", err)
+	}
+
+	doc, err := loader.ReadSBOM(f)
+	if err != nil {
+		return types.NewErr("loading document: %w", err)
+	}
+	return elements.Document{
+		Document: doc,
+	}
 }

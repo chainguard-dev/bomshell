@@ -6,8 +6,7 @@ import (
 	"github.com/chainguard-dev/bomshell/pkg/elements"
 	"github.com/chainguard-dev/bomshell/pkg/functions"
 	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types/traits"
-	celfuncs "github.com/google/cel-go/interpreter/functions"
+	"github.com/google/cel-go/ext"
 	//"github.com/google/cel-go/common/operators"
 	//"github.com/google/cel-go/common/types/traits"
 	//celfuncs "github.com/google/cel-go/interpreter/functions"
@@ -97,24 +96,47 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 				cel.UnaryBinding(functions.ToDocument),
 			),
 		),
+
+		cel.Function(
+			"LoadSBOM",
+			cel.Overload(
+				"global_load_sbom_binding",
+				[]*cel.Type{cel.StringType},
+				elements.DocumentType,
+				cel.UnaryBinding(functions.LoadSBOM),
+				//cel.BinaryBinding(functions.LoadSBOM),
+			),
+		),
+		/*
+			cel.Macros(
+				// cel.bind(var, <init>, <expr>)
+				cel.NewReceiverMacro("LoadSBOM", 1, celBind),
+			),
+		*/
 	}
 }
+
+func (shellLibrary) LibraryName() string {
+	return "cel.chainguard.bomshell"
+}
+
 func (shellLibrary) ProgramOptions() []cel.ProgramOption {
-	return []cel.ProgramOption{
-		// cel.Functions(functions.StandardOverloads()...),
+	/*
+		return []cel.ProgramOption{
+			// cel.Functions(functions.StandardOverloads()...),
 
-		cel.Functions(
-			&celfuncs.Overload{
-				Operator:     "++", /// Placegholder while I figure out how to overload operators.Add
-				OperandTrait: traits.AdderType,
-				Binary:       functions.Addition,
-				// Function:     functions.AdditionOp,
-				//NonStrict: false,
-			},
-		),
-	}
-
-	// return []cel.ProgramOption{}
+			cel.Functions(
+				&celfuncs.Overload{
+					Operator:     "++", /// Placegholder while I figure out how to overload operators.Add
+					OperandTrait: traits.AdderType,
+					Binary:       functions.Addition,
+					// Function:     functions.AdditionOp,
+					//NonStrict: false,
+				},
+			),
+		}
+	*/
+	return []cel.ProgramOption{}
 }
 
 func Library() cel.EnvOption {
@@ -122,8 +144,12 @@ func Library() cel.EnvOption {
 }
 
 func createEnvironment(opts *Options) (*cel.Env, error) {
-	shlib := Library()
-	env, err := cel.NewEnv(shlib)
+	env, err := cel.NewEnv(
+		Library(),
+		ext.Bindings(),
+		ext.Strings(),
+		ext.Encoders(),
+	)
 	if err != nil {
 		return nil, (fmt.Errorf("creating CEL environment: %w", err))
 	}
