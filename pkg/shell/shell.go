@@ -6,6 +6,7 @@ import (
 
 	"github.com/bom-squad/protobom/pkg/formats"
 	"github.com/bom-squad/protobom/pkg/sbom"
+	"github.com/google/cel-go/common/types/ref"
 )
 
 const (
@@ -44,15 +45,15 @@ func NewWithOptions(opts Options) (*BomShell, error) {
 	}, nil
 }
 
-func (bs *BomShell) RunFile(path string) error {
+func (bs *BomShell) RunFile(path string) (ref.Val, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return fmt.Errorf("reading program data: %w", err)
+		return nil, fmt.Errorf("reading program data: %w", err)
 	}
 	return bs.Run(string(data))
 }
 
-func (bs *BomShell) Run(code string) error {
+func (bs *BomShell) Run(code string) (ref.Val, error) {
 	// Variables that wil be made available in the CEL env
 	vars := map[string]interface{}{}
 
@@ -60,12 +61,12 @@ func (bs *BomShell) Run(code string) error {
 	if bs.Options.SBOM != "" {
 		f, err := bs.impl.OpenFile(bs.Options.SBOM)
 		if err != nil {
-			return fmt.Errorf("opening SBOM file: %w", err)
+			return nil, fmt.Errorf("opening SBOM file: %w", err)
 		}
 
 		doc, err := bs.impl.LoadSBOM(f)
 		if err != nil {
-			return fmt.Errorf("loading SBOM: %w", err)
+			return nil, fmt.Errorf("loading SBOM: %w", err)
 		}
 
 		vars["sbom"] = doc
@@ -73,20 +74,15 @@ func (bs *BomShell) Run(code string) error {
 
 	ast, err := bs.impl.Compile(bs.runner, code)
 	if err != nil {
-		return fmt.Errorf("compiling program: %w", err)
+		return nil, fmt.Errorf("compiling program: %w", err)
 	}
 
 	result, err := bs.impl.Evaluate(bs.runner, ast, vars)
 	if err != nil {
-		return fmt.Errorf("evaluating: %w", err)
+		return nil, fmt.Errorf("evaluating: %w", err)
 	}
 
-	if result != nil {
-		fmt.Printf("value: %v (%T)\n", result.Value(), result)
-	} else {
-		fmt.Printf("result is nil\n")
-	}
-	return nil
+	return result, nil
 }
 
 func (bs *BomShell) LoadSBOM(path string) (*sbom.Document, error) {
