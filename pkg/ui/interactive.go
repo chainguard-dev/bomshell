@@ -2,9 +2,9 @@ package ui
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
+	"github.com/chainguard-dev/bomshell/pkg/shell"
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
@@ -32,6 +32,7 @@ type historyEntry struct {
 
 type model struct {
 	ready    bool
+	bomshell *shell.BomShell
 	history  []historyEntry
 	viewport viewport.Model
 	textarea textarea.Model
@@ -59,9 +60,23 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyCtrlC, tea.KeyEsc:
 			return m, tea.Quit
 		case tea.KeyEnter:
-			m.history = append(m.history, historyEntry{
-				"Val: " + m.textarea.Value(), "resultado",
-			})
+			// Exec:
+			result, err := m.bomshell.Run(m.textarea.Value())
+			if err == nil {
+				if result == nil {
+					m.history = append(m.history, historyEntry{
+						"Val: " + m.textarea.Value(), "<nil>",
+					})
+				} else {
+					m.history = append(m.history, historyEntry{
+						"Val: " + m.textarea.Value(), fmt.Sprintf("value: %v (%T)\n", result.Value(), result),
+					})
+				}
+			} else {
+				m.history = append(m.history, historyEntry{
+					"Val: " + m.textarea.Value(), "Error: " + err.Error(),
+				})
+			}
 
 			// content := fmt.Sprintf("Va pues (len es %d):\n", len(m.history))
 			content := ""
@@ -132,7 +147,7 @@ func max(a, b int) int {
 	return b
 }
 
-func initModel() model {
+func initModel(bomshell *shell.BomShell) model {
 	ta := textarea.New()
 	ta.Placeholder = "type a bomshell expression..."
 	ta.Focus()
@@ -144,20 +159,41 @@ func initModel() model {
 	ta.KeyMap.InsertNewline.SetEnabled(false)
 
 	return model{
+		bomshell: bomshell,
 		history:  []historyEntry{},
 		textarea: ta,
 	}
 }
 
-func main() {
-	p := tea.NewProgram(
-		initModel(),
-		tea.WithAltScreen(),
-		//tea.WithMouseCellMotion(),
-	)
+type Interactive struct {
+	ui       *tea.Program
+	bomshell *shell.BomShell
+}
 
-	if _, err := p.Run(); err != nil {
-		fmt.Println("could not run program:", err)
-		os.Exit(1)
+func (i *Interactive) Start() error {
+	_, err := i.ui.Run()
+	return err
+}
+
+func NewInteractive() (*Interactive, error) {
+	bomshell, err := shell.NewWithOptions(shell.Options{
+		//SBOM:   sbomPath,
+		Format: shell.DefaultFormat,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("creating bomshell environment: %w", err)
 	}
+	/*
+		if err := bomshell.RunFile(program); err != nil {
+			logrus.Fatal(err)
+		}
+	*/
+	return &Interactive{
+		bomshell: bomshell,
+		ui: tea.NewProgram(
+			initModel(bomshell),
+			tea.WithAltScreen(),
+			//tea.WithMouseCellMotion(),
+		),
+	}, nil
 }
