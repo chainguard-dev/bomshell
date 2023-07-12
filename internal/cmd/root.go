@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/bom-squad/protobom/pkg/formats"
+	"github.com/chainguard-dev/bomshell/pkg/shell"
 	"github.com/chainguard-dev/bomshell/pkg/ui"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -10,10 +12,15 @@ import (
 )
 
 type commandLineOptions struct {
-	logLevel string
+	DocumentFormat string
+	NodeListFormat string
+	logLevel       string
 }
 
-var commandLineOpts = &commandLineOptions{}
+var commandLineOpts = &commandLineOptions{
+	DocumentFormat: string(formats.SPDX23JSON),
+	NodeListFormat: "application/json",
+}
 
 func rootCommand() *cobra.Command {
 	var rootCmd = &cobra.Command{
@@ -60,4 +67,20 @@ func Execute() {
 
 func initLogging(*cobra.Command, []string) error {
 	return log.SetupGlobalLogger(commandLineOpts.logLevel)
+}
+
+func (o *commandLineOptions) AddFlags(cmd *cobra.Command) {
+	cmd.PersistentFlags().StringVar(
+		&o.DocumentFormat,
+		"document-format",
+		string(shell.DefaultFormat),
+		fmt.Sprintf("format to output generated documents"),
+	)
+
+	cmd.PersistentFlags().StringVar(
+		&o.NodeListFormat,
+		"nodelist-format",
+		commandLineOpts.NodeListFormat,
+		fmt.Sprintf("format to output nodelsits (SBOM fragments)"),
+	)
 }

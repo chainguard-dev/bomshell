@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/bom-squad/protobom/pkg/formats"
 	"github.com/chainguard-dev/bomshell/pkg/shell"
@@ -12,12 +13,11 @@ import (
 
 func execCommand() *cobra.Command {
 	type execOpts = struct {
-		format string
-		sbom   string
+		commandLineOptions
+		sbom string
 	}
 	opts := &execOpts{
-		format: string(formats.SPDX23JSON),
-		sbom:   "",
+		sbom: "",
 	}
 	execCmd := &cobra.Command{
 		PersistentPreRunE: initLogging,
@@ -39,7 +39,7 @@ the program statements.
 
 			bomshell, err := shell.NewWithOptions(shell.Options{
 				SBOM:   opts.sbom,
-				Format: shell.DefaultFormat,
+				Format: formats.Format(opts.DocumentFormat),
 			})
 			if err != nil {
 				logrus.Fatal("creating bomshell: %w", err)
@@ -50,21 +50,12 @@ the program statements.
 				return fmt.Errorf("executing program: %w", err)
 			}
 
-			if result != nil {
-				fmt.Printf("value: %v (%T)\n", result.Value(), result)
-			} else {
-				fmt.Printf("result is nil\n")
-			}
-			return nil
+			return bomshell.PrintResult(result, os.Stdout)
 		},
 	}
 
-	execCmd.PersistentFlags().StringVar(
-		&opts.format,
-		"format",
-		opts.format,
-		"format to output generated SBOMs",
-	)
+	commandLineOpts.AddFlags(execCmd)
+	opts.commandLineOptions = *commandLineOpts
 
 	execCmd.PersistentFlags().StringVar(
 		&opts.sbom,
