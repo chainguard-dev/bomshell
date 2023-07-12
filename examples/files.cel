@@ -1,1 +1,2 @@
-sbom.packages().ToDocument()
+// This bomshell query extracts all files from the SBOM and returns them
+sbom.files().ToDocument()
