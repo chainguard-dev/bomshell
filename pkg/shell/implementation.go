@@ -1,12 +1,15 @@
 package shell
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
 
 	"github.com/bom-squad/protobom/pkg/reader"
 	"github.com/bom-squad/protobom/pkg/sbom"
+	"github.com/bom-squad/protobom/pkg/writer"
+	"github.com/chainguard-dev/bomshell/pkg/elements"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/types/ref"
 )
@@ -16,6 +19,7 @@ type BomShellImplementation interface {
 	Evaluate(*Runner, *cel.Ast, map[string]interface{}) (ref.Val, error)
 	LoadSBOM(io.ReadSeekCloser) (*sbom.Document, error)
 	OpenFile(path string) (*os.File, error)
+	PrintDocumentResult(Options, ref.Val, io.WriteCloser) error
 }
 
 type DefaultBomShellImplementation struct{}
@@ -30,7 +34,7 @@ func (di *DefaultBomShellImplementation) Evaluate(runner *Runner, ast *cel.Ast, 
 
 func (di *DefaultBomShellImplementation) LoadSBOM(stream io.ReadSeekCloser) (*sbom.Document, error) {
 	r := reader.New()
-	doc, err := r.ParseReader(stream)
+	doc, err := r.ParseStream(stream)
 	if err != nil {
 		return nil, fmt.Errorf("parsing SBOM: %w", err)
 	}
@@ -47,4 +51,25 @@ func (di *DefaultBomShellImplementation) OpenFile(path string) (*os.File, error)
 
 }
 
-///func HandleDocumentResult()
+// PrintDocumentResult takes a document result from a bomshell query and outputs it
+// as an SBOM in the format specified in the options
+func (di *DefaultBomShellImplementation) PrintDocumentResult(opts Options, result ref.Val, w io.WriteCloser) error {
+	protoWriter := writer.New()
+	protoWriter.Options.Format = opts.Format
+	// More options?
+
+	// Check to make sure the result is a document
+	if result.Type() != elements.DocumentTypeValue {
+		return errors.New("error printing result, value is not a document")
+	}
+
+	doc, ok := result.Value().(elements.Document)
+	if !ok {
+		return errors.New("error casting result into protobom document")
+	}
+
+	if err := protoWriter.WriteStream(doc.Document, w); err != nil {
+		return fmt.Errorf("writing document to stream: %w", err)
+	}
+	return nil
+}

@@ -11,7 +11,7 @@ import (
 
 func ReadSBOM(stream io.ReadSeekCloser) (*sbom.Document, error) {
 	r := reader.New()
-	doc, err := r.ParseReader(stream)
+	doc, err := r.ParseStream(stream)
 	if err != nil {
 		return nil, fmt.Errorf("parsing SBOM: %w", err)
 	}

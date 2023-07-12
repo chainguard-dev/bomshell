@@ -57,7 +57,7 @@ func (d Document) Equal(other ref.Val) ref.Val {
 }
 
 func (d Document) Type() ref.Type {
-	return NodeTypeValue
+	return DocumentTypeValue
 }
 
 // Value implements ref.Val.Value.

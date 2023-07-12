@@ -54,7 +54,7 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 		),
 
 		cel.Function(
-			"tonodelist",
+			"ToNodeList",
 			cel.MemberOverload(
 				"node_tonodelist_binding",
 				[]*cel.Type{elements.NodeType},
@@ -80,12 +80,24 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 		cel.Function(
 			"NodeByID",
 			cel.MemberOverload(
-				"sbom_elementbyid_binding", []*cel.Type{elements.DocumentType, cel.StringType}, elements.NodeType,
+				"sbom_nodebyid_binding", []*cel.Type{elements.DocumentType, cel.StringType}, elements.NodeType,
 				cel.BinaryBinding(functions.NodeById),
 			),
 			cel.MemberOverload(
-				"nodelist_elementbyid_binding", []*cel.Type{elements.NodeListType, cel.StringType}, elements.NodeType,
+				"nodelist_nodebyid_binding", []*cel.Type{elements.NodeListType, cel.StringType}, elements.NodeType,
 				cel.BinaryBinding(functions.NodeById),
+			),
+		),
+
+		cel.Function(
+			"NodesByPurlType",
+			cel.MemberOverload(
+				"sbom_nodesbypurltype_binding", []*cel.Type{elements.DocumentType, cel.StringType}, elements.NodeListType,
+				cel.BinaryBinding(functions.NodesByPurlType),
+			),
+			cel.MemberOverload(
+				"nodelist_nodesbypurltype_binding", []*cel.Type{elements.NodeListType, cel.StringType}, elements.NodeListType,
+				cel.BinaryBinding(functions.NodesByPurlType),
 			),
 		),
 

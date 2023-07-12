@@ -2,10 +2,12 @@ package shell
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/bom-squad/protobom/pkg/formats"
 	"github.com/bom-squad/protobom/pkg/sbom"
+	"github.com/chainguard-dev/bomshell/pkg/elements"
 	"github.com/google/cel-go/common/types/ref"
 )
 
@@ -97,4 +99,21 @@ func (bs *BomShell) LoadSBOM(path string) (*sbom.Document, error) {
 	}
 
 	return doc, nil
+}
+
+// PrintResult writes result into writer w according to the format
+// configured in the options
+func (bs *BomShell) PrintResult(result ref.Val, w io.WriteCloser) error {
+	// TODO(puerco): Check if result is an error
+	if result == nil {
+		fmt.Fprint(w, "<nil>")
+	}
+
+	switch result.Type() {
+	case elements.DocumentTypeValue:
+		return bs.impl.PrintDocumentResult(bs.Options, result, w)
+	default:
+		fmt.Printf("TMPRENDER:\nvalue: %v (%T)\n", result.Value(), result)
+		return nil
+	}
 }
