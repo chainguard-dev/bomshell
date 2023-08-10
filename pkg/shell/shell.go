@@ -9,6 +9,7 @@ import (
 	"github.com/bom-squad/protobom/pkg/sbom"
 	"github.com/chainguard-dev/bomshell/pkg/elements"
 	"github.com/google/cel-go/common/types/ref"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -17,7 +18,7 @@ const (
 )
 
 type Options struct {
-	SBOM   string
+	SBOMs  []string
 	Format formats.Format
 }
 
@@ -58,20 +59,25 @@ func (bs *BomShell) RunFile(path string) (ref.Val, error) {
 func (bs *BomShell) Run(code string) (ref.Val, error) {
 	// Variables that wil be made available in the CEL env
 	vars := map[string]interface{}{}
-
+	sbomList := []*sbom.Document{}
 	// Load an SBNOM if defined
-	if bs.Options.SBOM != "" {
-		f, err := bs.impl.OpenFile(bs.Options.SBOM)
-		if err != nil {
-			return nil, fmt.Errorf("opening SBOM file: %w", err)
-		}
+	if len(bs.Options.SBOMs) > 0 {
+		for _, sbomSpec := range bs.Options.SBOMs {
+			// TODO(puerco): Split for varname
+			f, err := bs.impl.OpenFile(sbomSpec)
+			if err != nil {
+				return nil, fmt.Errorf("opening SBOM file: %w", err)
+			}
 
-		doc, err := bs.impl.LoadSBOM(f)
-		if err != nil {
-			return nil, fmt.Errorf("loading SBOM: %w", err)
-		}
+			doc, err := bs.impl.LoadSBOM(f)
+			if err != nil {
+				return nil, fmt.Errorf("loading SBOM: %w", err)
+			}
+			logrus.Debugf("Loaded %s", sbomSpec)
 
-		vars["sbom"] = doc
+			sbomList = append(sbomList, doc)
+		}
+		vars["sboms"] = sbomList
 	}
 
 	ast, err := bs.impl.Compile(bs.runner, code)
@@ -88,7 +94,7 @@ func (bs *BomShell) Run(code string) (ref.Val, error) {
 }
 
 func (bs *BomShell) LoadSBOM(path string) (*sbom.Document, error) {
-	f, err := bs.impl.OpenFile(bs.Options.SBOM)
+	f, err := bs.impl.OpenFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("opening SBOM file: %w", err)
 	}

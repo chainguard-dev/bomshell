@@ -14,10 +14,10 @@ import (
 func execCommand() *cobra.Command {
 	type execOpts = struct {
 		commandLineOptions
-		sbom string
+		sboms []string
 	}
 	opts := &execOpts{
-		sbom: "",
+		sboms: []string{},
 	}
 	execCmd := &cobra.Command{
 		PersistentPreRunE: initLogging,
@@ -38,7 +38,7 @@ the program statements.
 			}
 
 			bomshell, err := shell.NewWithOptions(shell.Options{
-				SBOM:   opts.sbom,
+				SBOMs:  opts.sboms,
 				Format: formats.Format(opts.DocumentFormat),
 			})
 			if err != nil {
@@ -57,11 +57,11 @@ the program statements.
 	commandLineOpts.AddFlags(execCmd)
 	opts.commandLineOptions = *commandLineOpts
 
-	execCmd.PersistentFlags().StringVar(
-		&opts.sbom,
+	execCmd.PersistentFlags().StringArrayVar(
+		&opts.sboms,
 		"sbom",
-		opts.sbom,
-		"path to sbom to ingest",
+		opts.sboms,
+		"path to one or more SBOMs to load into the bomshell environment",
 	)
 
 	return execCmd
