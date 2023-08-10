@@ -1,2 +1,1 @@
-sbom.NodesByPurlType("oci").ToDocument()
-
+sboms[0].NodesByPurlType("golang").ToDocument()

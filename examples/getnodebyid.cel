@@ -1,1 +1,1 @@
-sbom.NodeByID("Package-curl-8.1.2-r0")
+sboms[0].NodeByID("Package-curl-8.1.2-r0")
