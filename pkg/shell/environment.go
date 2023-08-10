@@ -21,9 +21,8 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 		cel.Types(&elements.Document{}),
 		cel.Types(&elements.NodeList{}),
 
-		cel.Variable("sbom",
-			// cel.ObjectType(protoDocumentType),
-			elements.DocumentType,
+		cel.Variable("sboms",
+			cel.MapType(cel.IntType, elements.DocumentType),
 		),
 
 		cel.Function(
@@ -116,7 +115,22 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 				[]*cel.Type{cel.StringType},
 				elements.DocumentType,
 				cel.UnaryBinding(functions.LoadSBOM),
-				//cel.BinaryBinding(functions.LoadSBOM),
+			),
+		),
+
+		cel.Function(
+			"RelateNodeListAtID",
+			cel.MemberOverload(
+				"sbom_relatenodesatid_binding",
+				[]*cel.Type{elements.DocumentType, elements.NodeListType, cel.StringType, cel.StringType},
+				elements.DocumentType, // result
+				cel.FunctionBinding(functions.RelateNodeListAtID),
+			),
+			cel.MemberOverload(
+				"nodelist_relatenodesatid_binding",
+				[]*cel.Type{elements.NodeListType, elements.NodeListType, cel.StringType, cel.StringType},
+				elements.DocumentType, // result
+				cel.FunctionBinding(functions.RelateNodeListAtID),
 			),
 		),
 		/*

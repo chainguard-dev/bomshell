@@ -176,3 +176,45 @@ var NodesByPurlType = func(lhs, rhs ref.Val) ref.Val {
 		NodeList: nl,
 	}
 }
+
+// "", sbom[2].GetNodesByPurlType("golang"), "DEPENDS_ON"
+// var RelateNodeListAtID = func(lhs, rawNl, rawId, rawRel ref.Val) ref.Val {
+var RelateNodeListAtID = func(vals ...ref.Val) ref.Val {
+	if len(vals) != 4 {
+		return types.NewErr("invalid number of arguments for RealteAtNodeListAtID")
+	}
+	id, ok := vals[2].Value().(string)
+	if !ok {
+		return types.NewErr("node id has to be a string")
+	}
+	// relType
+	_, ok = vals[3].Value().(string)
+	if !ok {
+		return types.NewErr("relationship type has has to be a string")
+	}
+
+	nodelist, ok := vals[1].(elements.NodeList)
+	if !ok {
+		return types.NewErr("could not cast nodelist")
+	}
+
+	switch v := vals[0].Value().(type) {
+	case *sbom.Document:
+		// FIXME: Lookup reltype
+		if err := v.NodeList.RelateNodeListAtID(nodelist.Value().(*sbom.NodeList), id, sbom.Edge_dependsOn); err != nil {
+			return types.NewErr(err.Error())
+		}
+		return elements.Document{
+			Document: v,
+		}
+	case *sbom.NodeList:
+		if err := v.RelateNodeListAtID(nodelist.Value().(*sbom.NodeList), id, sbom.Edge_dependsOn); err != nil {
+			return types.NewErr(err.Error())
+		}
+		return elements.NodeList{
+			NodeList: v,
+		}
+	default:
+		return types.NewErr("method unsupported on type %T", vals[0].Value())
+	}
+}
