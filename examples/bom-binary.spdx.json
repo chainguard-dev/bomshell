@@ -1,0 +1,50 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "SBOM-SPDX-26cad80e-53bc-4b80-bead-f46651423ab7",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2023-08-10T04:08:02Z",
+    "creators": [
+      "Tool: bom-devel"
+    ],
+    "licenseListVersion": "3.20"
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://spdx.org/spdxdocs/k8s-releng-bom-ce7e2a06-ff1b-4603-b4ef-408f4d7b7ac0",
+  "documentDescribes": [
+    "SPDXRef-File-bom"
+  ],
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-File-bom",
+      "name": "bom",
+      "versionInfo": "v0.5.1",
+      "filesAnalyzed": false,
+      "licenseConcluded": "Apache-2.0",
+      "downloadLocation": "NOASSERTION",
+      "copyrightText": "Copyright (c) 2009 The Kubernetes Authors",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "19b0782fac90e395c48019cdda6e70c0346c05f3"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "94db7be7da0bcf000cae1c1971a0e9b14a48efab46e4980ffc91d3a3d68cd073"
+        },
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "61d1b223400f17c47bb5723a6e51c3d07705e139ff90beb45469f4a9df7ac83b2e4d066ab147bee8647ca9b8b0d985a22d093153774cd5fbd4aa46caaf3e5a62"
+        }
+      ],
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/bom@v0.5.1",
+          "referenceType": "purl"
+        }
+      ]
+    }
+  ],
+  "relationships": []
+}

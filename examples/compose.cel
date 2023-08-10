@@ -1,0 +1,64 @@
+// This is an example of SBOM composition.
+// 
+// There should be two SBOMs that can be used to test this program:
+//   bom-binary.spdx.json
+//   bom-github.spdx.json
+//
+// The first one (bom-binary.spdx.json) is an sbom with a single package
+// describing the bom binary for linux/amd64:
+//
+//  📂 SPDX Document SBOM-SPDX-26cad80e-53bc-4b80-bead-f46651423ab7
+//  │ 
+//  │ 📦 DESCRIBES 1 Packages
+//  │ 
+//  ├ bom@v0.5.1
+//  │  └ 🔗 0 Relationships
+//  └ 📄 DESCRIBES 0 Files
+//
+//
+// The second SBOM (bom-github.spdx.json) is an SPDX SBOM downloaded from the
+// GitHub self service SBOM feature. It describes the github respoitory housing
+// the code that compiled the tool above:
+//
+// 📂 SPDX Document com.github.kubernetes-sigs/bom
+//  │ 
+//  │ 📦 DESCRIBES 1 Packages
+//  │ 
+//  ├ pkg:github/kubernetes-sigs/bom@2cc9dcc83b2867047edff143905829ff9e3b98ff
+//  │  │ 🔗 191 Relationships
+//  │  ├ DEPENDS_ON PACKAGE pkg:npm/%40nodelib/fs.scandir@2.1.3
+//  │  ├ DEPENDS_ON PACKAGE pkg:npm/%40nodelib/fs.stat@2.0.3
+//  │  ├ DEPENDS_ON PACKAGE pkg:npm/%40nodelib/fs.walk@1.2.4
+//  │  ├ DEPENDS_ON PACKAGE pkg:npm/ansi-regex@5.0.1
+// [ ... ]
+//  │  ├ DEPENDS_ON PACKAGE pkg:golang/github.com/docker/docker@24.0.0+incompatible
+//  │  ├ DEPENDS_ON PACKAGE pkg:golang/github.com/go-git/go-git/v5@5.8.1
+//  │  ├ DEPENDS_ON PACKAGE pkg:golang/github.com/google/go-containerregistry@0.16.1
+// [ ... ]
+//  │  ├ DEPENDS_ON PACKAGE pkg:githubactions/actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe
+//  │  ├ DEPENDS_ON PACKAGE pkg:githubactions/goreleaser/goreleaser-action@336e29918d653399e599bfca99fadc1d7ffbc9f7
+//  │  ├ DEPENDS_ON PACKAGE pkg:githubactions/puerco/release-actions/setup-tejolote@6c88cda6495b4415966e61f20798fb96a9081397
+// [ ... ]
+//  │ 
+//  └ 📄 DESCRIBES 0 Files
+//
+//
+// The second SBOM contains three types of dependencies:
+// - npm (used in the website)
+// - go (the application source)
+// - githubactions (from the repository CI)
+//
+// The following bomshell program extracts the go dependencies from the second
+// SBOM and remixes them into the first to enrich its data. He resulting SBOM
+// describes the full dependency list of the binary.
+//
+// To run the composing example, run the following bomshell invocation:
+// 
+// bomshell exec compose.cel bom-binary.spdx.json bom-github.spdx.json
+//
+
+sboms[0].RelateNodeListAtID(
+    sboms[1].NodesByPurlType("golang"),
+    "File-bom",
+    "DEPENDS_ON"
+)
