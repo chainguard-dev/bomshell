@@ -1,4 +1,14 @@
-// This is an example of SBOM composition.
+// This is an example of SBOM composition using bomshell.
+//
+// === BEGIN CODE === 
+
+sboms[0].RelateNodeListAtID(
+    sboms[1].NodesByPurlType("golang"),
+    "File-bom",
+    "DEPENDS_ON"
+)
+
+// === END CODE ===
 // 
 // There should be two SBOMs that can be used to test this program:
 //   bom-binary.spdx.json
@@ -56,9 +66,3 @@
 // 
 // bomshell exec compose.cel bom-binary.spdx.json bom-github.spdx.json
 //
-
-sboms[0].RelateNodeListAtID(
-    sboms[1].NodesByPurlType("golang"),
-    "File-bom",
-    "DEPENDS_ON"
-)
