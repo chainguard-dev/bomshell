@@ -26,29 +26,29 @@ var defaultOptions = Options{
 	Format: DefaultFormat,
 }
 
-type BomShell struct {
+type Bomshell struct {
 	Options Options
 	runner  *Runner
-	impl    BomShellImplementation
+	impl    BomshellImplementation
 }
 
-func New() (*BomShell, error) {
+func New() (*Bomshell, error) {
 	return NewWithOptions(defaultOptions)
 }
 
-func NewWithOptions(opts Options) (*BomShell, error) {
+func NewWithOptions(opts Options) (*Bomshell, error) {
 	runner, err := NewRunnerWithOptions(&opts)
 	if err != nil {
 		return nil, fmt.Errorf("creating runner: %w", err)
 	}
-	return &BomShell{
+	return &Bomshell{
 		Options: opts,
 		runner:  runner,
-		impl:    &DefaultBomShellImplementation{},
+		impl:    &DefaultBomshellImplementation{},
 	}, nil
 }
 
-func (bs *BomShell) RunFile(path string) (ref.Val, error) {
+func (bs *Bomshell) RunFile(path string) (ref.Val, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("reading program data: %w", err)
@@ -56,7 +56,7 @@ func (bs *BomShell) RunFile(path string) (ref.Val, error) {
 	return bs.Run(string(data))
 }
 
-func (bs *BomShell) Run(code string) (ref.Val, error) {
+func (bs *Bomshell) Run(code string) (ref.Val, error) {
 	// Variables that wil be made available in the CEL env
 	vars := map[string]interface{}{}
 	sbomList := []*sbom.Document{}
@@ -99,7 +99,7 @@ func (bs *BomShell) Run(code string) (ref.Val, error) {
 	return result, nil
 }
 
-func (bs *BomShell) LoadSBOM(path string) (*sbom.Document, error) {
+func (bs *Bomshell) LoadSBOM(path string) (*sbom.Document, error) {
 	f, err := bs.impl.OpenFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("opening SBOM file: %w", err)
@@ -115,7 +115,7 @@ func (bs *BomShell) LoadSBOM(path string) (*sbom.Document, error) {
 
 // PrintResult writes result into writer w according to the format
 // configured in the options
-func (bs *BomShell) PrintResult(result ref.Val, w io.WriteCloser) error {
+func (bs *Bomshell) PrintResult(result ref.Val, w io.WriteCloser) error {
 	// TODO(puerco): Check if result is an error
 	if result == nil {
 		fmt.Fprint(w, "<nil>")

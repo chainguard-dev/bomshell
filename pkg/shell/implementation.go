@@ -14,7 +14,7 @@ import (
 	"github.com/google/cel-go/common/types/ref"
 )
 
-type BomShellImplementation interface {
+type BomshellImplementation interface {
 	Compile(*Runner, string) (*cel.Ast, error)
 	Evaluate(*Runner, *cel.Ast, map[string]interface{}) (ref.Val, error)
 	LoadSBOM(io.ReadSeekCloser) (*sbom.Document, error)
@@ -22,17 +22,17 @@ type BomShellImplementation interface {
 	PrintDocumentResult(Options, ref.Val, io.WriteCloser) error
 }
 
-type DefaultBomShellImplementation struct{}
+type DefaultBomshellImplementation struct{}
 
-func (di *DefaultBomShellImplementation) Compile(runner *Runner, code string) (*cel.Ast, error) {
+func (di *DefaultBomshellImplementation) Compile(runner *Runner, code string) (*cel.Ast, error) {
 	return runner.Compile(code)
 }
 
-func (di *DefaultBomShellImplementation) Evaluate(runner *Runner, ast *cel.Ast, variables map[string]interface{}) (ref.Val, error) {
+func (di *DefaultBomshellImplementation) Evaluate(runner *Runner, ast *cel.Ast, variables map[string]interface{}) (ref.Val, error) {
 	return runner.EvaluateAST(ast, variables)
 }
 
-func (di *DefaultBomShellImplementation) LoadSBOM(stream io.ReadSeekCloser) (*sbom.Document, error) {
+func (di *DefaultBomshellImplementation) LoadSBOM(stream io.ReadSeekCloser) (*sbom.Document, error) {
 	r := reader.New()
 	doc, err := r.ParseStream(stream)
 	if err != nil {
@@ -42,7 +42,7 @@ func (di *DefaultBomShellImplementation) LoadSBOM(stream io.ReadSeekCloser) (*sb
 	return doc, nil
 }
 
-func (di *DefaultBomShellImplementation) OpenFile(path string) (*os.File, error) {
+func (di *DefaultBomshellImplementation) OpenFile(path string) (*os.File, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("opening SBOM file: %w", err)
@@ -53,7 +53,7 @@ func (di *DefaultBomShellImplementation) OpenFile(path string) (*os.File, error)
 
 // PrintDocumentResult takes a document result from a bomshell query and outputs it
 // as an SBOM in the format specified in the options
-func (di *DefaultBomShellImplementation) PrintDocumentResult(opts Options, result ref.Val, w io.WriteCloser) error {
+func (di *DefaultBomshellImplementation) PrintDocumentResult(opts Options, result ref.Val, w io.WriteCloser) error {
 	protoWriter := writer.New()
 	protoWriter.Options.Format = opts.Format
 	// More options?

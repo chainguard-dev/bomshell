@@ -32,7 +32,7 @@ type historyEntry struct {
 
 type model struct {
 	ready    bool
-	bomshell *shell.BomShell
+	bomshell *shell.Bomshell
 	history  []historyEntry
 	viewport viewport.Model
 	textarea textarea.Model
@@ -147,7 +147,7 @@ func max(a, b int) int {
 	return b
 }
 
-func initModel(bomshell *shell.BomShell) model {
+func initModel(bomshell *shell.Bomshell) model {
 	ta := textarea.New()
 	ta.Placeholder = "type a bomshell expression..."
 	ta.Focus()
@@ -167,7 +167,7 @@ func initModel(bomshell *shell.BomShell) model {
 
 type Interactive struct {
 	ui       *tea.Program
-	bomshell *shell.BomShell
+	bomshell *shell.Bomshell
 }
 
 func (i *Interactive) Start() error {
