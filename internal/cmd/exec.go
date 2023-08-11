@@ -42,7 +42,7 @@ the program statements.
 				Format: formats.Format(opts.DocumentFormat),
 			})
 			if err != nil {
-				logrus.Fatal("creating bomshell: %w", err)
+				logrus.Fatalf("creating bomshell: %v", err)
 			}
 
 			result, err := bomshell.RunFile(args[0])

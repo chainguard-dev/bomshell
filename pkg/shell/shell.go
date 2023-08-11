@@ -60,7 +60,8 @@ func (bs *BomShell) Run(code string) (ref.Val, error) {
 	// Variables that wil be made available in the CEL env
 	vars := map[string]interface{}{}
 	sbomList := []*sbom.Document{}
-	// Load an SBNOM if defined
+
+	// Load defined SBOMs into the sboms array
 	if len(bs.Options.SBOMs) > 0 {
 		for _, sbomSpec := range bs.Options.SBOMs {
 			// TODO(puerco): Split for varname
@@ -77,8 +78,13 @@ func (bs *BomShell) Run(code string) (ref.Val, error) {
 
 			sbomList = append(sbomList, doc)
 		}
-		vars["sboms"] = sbomList
 	}
+
+	// Add the SBOM list to the runtim environment
+	vars["sboms"] = sbomList
+
+	// Add the default bomshell object
+	vars["bomshell"] = elements.Bomshell{}
 
 	ast, err := bs.impl.Compile(bs.runner, code)
 	if err != nil {

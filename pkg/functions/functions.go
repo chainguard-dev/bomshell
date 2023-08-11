@@ -136,7 +136,7 @@ var ToDocument = func(lhs ref.Val) ref.Val {
 	return doc
 }
 
-var LoadSBOM = func(pathVal ref.Val) ref.Val {
+var LoadSBOM = func(_, pathVal ref.Val) ref.Val {
 	path, ok := pathVal.Value().(string)
 	if !ok {
 		return types.NewErr("argument to element by id has to be a string")

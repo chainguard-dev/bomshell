@@ -6,6 +6,8 @@ import (
 	"github.com/chainguard-dev/bomshell/pkg/elements"
 	"github.com/chainguard-dev/bomshell/pkg/functions"
 	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/common/types/ref"
 	"github.com/google/cel-go/ext"
 	//"github.com/google/cel-go/common/operators"
 	//"github.com/google/cel-go/common/types/traits"
@@ -20,10 +22,11 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 	return []cel.EnvOption{
 		cel.Types(&elements.Document{}),
 		cel.Types(&elements.NodeList{}),
+		//cel.Types(&elements.Bomshell{}),
 
-		cel.Variable("sboms",
-			cel.MapType(cel.IntType, elements.DocumentType),
-		),
+		cel.Variable("sboms", cel.MapType(cel.IntType, elements.DocumentType)),
+
+		cel.Variable("bomshell", elements.BomshellType),
 
 		cel.Function(
 			"files",
@@ -103,18 +106,18 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 		cel.Function(
 			"ToDocument",
 			cel.MemberOverload(
-				"nodelist_todocument_binding", []*cel.Type{elements.NodeListType}, elements.DocumentType,
+				"nodelist_todocument_binding",
+				[]*cel.Type{elements.NodeListType}, elements.DocumentType,
 				cel.UnaryBinding(functions.ToDocument),
 			),
 		),
 
 		cel.Function(
 			"LoadSBOM",
-			cel.Overload(
-				"global_load_sbom_binding",
-				[]*cel.Type{cel.StringType},
-				elements.DocumentType,
-				cel.UnaryBinding(functions.LoadSBOM),
+			cel.MemberOverload(
+				"bomshell_loadsbom_binding",
+				[]*cel.Type{elements.BomshellType, cel.StringType}, elements.DocumentType,
+				cel.BinaryBinding(functions.LoadSBOM),
 			),
 		),
 
@@ -169,8 +172,21 @@ func Library() cel.EnvOption {
 	return cel.Lib(shellLibrary{})
 }
 
+type customTypeAdapter struct {
+}
+
+func (customTypeAdapter) NativeToValue(value interface{}) ref.Val {
+	val, ok := value.(elements.Bomshell)
+	if ok {
+		return val
+	} else {
+		//let the default adapter handle other cases
+		return types.DefaultTypeAdapter.NativeToValue(value)
+	}
+}
 func createEnvironment(opts *Options) (*cel.Env, error) {
 	env, err := cel.NewEnv(
+		cel.CustomTypeAdapter(&customTypeAdapter{}),
 		Library(),
 		ext.Bindings(),
 		ext.Strings(),
