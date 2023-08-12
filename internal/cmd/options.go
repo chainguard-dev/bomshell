@@ -16,6 +16,12 @@ type commandLineOptions struct {
 	sboms          []string
 }
 
+type execOptions struct {
+	ExecLine string
+}
+
+var execOpts = &execOptions{}
+
 var commandLineOpts = &commandLineOptions{
 	DocumentFormat: string(formats.SPDX23JSON),
 	NodeListFormat: "application/json",
@@ -44,9 +50,19 @@ func (o *commandLineOptions) AddFlags(cmd *cobra.Command) {
 	)
 
 	cmd.PersistentFlags().StringVar(
-		&commandLineOpts.logLevel,
+		&o.logLevel,
 		"log-level",
 		"info",
 		fmt.Sprintf("the logging verbosity, either %s", log.LevelNames()),
+	)
+}
+
+func (eo *execOptions) AddFlags(cmd *cobra.Command) {
+	cmd.PersistentFlags().StringVarP(
+		&eo.ExecLine,
+		"exec",
+		"e",
+		"",
+		fmt.Sprintf("CEL code to execute (overrides filename)"),
 	)
 }

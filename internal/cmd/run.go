@@ -9,6 +9,7 @@ import (
 	"github.com/chainguard-dev/bomshell/pkg/shell"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"sigs.k8s.io/release-utils/version"
 )
 
 func runCommand() *cobra.Command {
@@ -23,6 +24,7 @@ It can optionally load an SBOM into the environment and make it available to
 the program statements.
 `,
 		Use:           "run program.cel [sbom.spdx.json] ",
+		Version:       version.GetVersionInfo().GitVersion,
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -31,18 +33,24 @@ the program statements.
 				return errors.New("no cel program specified")
 			}
 
-			return runFile(commandLineOpts, args[0])
+			sbomPaths := []string{}
+			if len(args) > 1 {
+				sbomPaths = append(sbomPaths, args[1:]...)
+			}
+			sbomPaths = append(sbomPaths, commandLineOpts.sboms...)
+
+			return runFile(commandLineOpts, args[0], sbomPaths)
 		},
 	}
-
+	execOpts.AddFlags(runCmd)
 	commandLineOpts.AddFlags(runCmd)
 
 	return runCmd
 }
 
-func buildShell(opts *commandLineOptions) (*shell.Bomshell, error) {
+func buildShell(opts *commandLineOptions, sbomList []string) (*shell.Bomshell, error) {
 	bomshell, err := shell.NewWithOptions(shell.Options{
-		SBOMs:  opts.sboms,
+		SBOMs:  sbomList,
 		Format: formats.Format(opts.DocumentFormat),
 	})
 	if err != nil {
@@ -51,8 +59,9 @@ func buildShell(opts *commandLineOptions) (*shell.Bomshell, error) {
 	return bomshell, nil
 }
 
-func runFile(opts *commandLineOptions, recipePath string) error {
-	bomshell, err := buildShell(opts)
+// runFile creates and configures a bomshell instance to run a recipe from a file
+func runFile(opts *commandLineOptions, recipePath string, sbomList []string) error {
+	bomshell, err := buildShell(opts, sbomList)
 	if err != nil {
 		return err
 	}
@@ -63,4 +72,9 @@ func runFile(opts *commandLineOptions, recipePath string) error {
 	}
 
 	return bomshell.PrintResult(result, os.Stdout)
+}
+
+// runFile creates and configures a bomshell instance to run a recipe from a string
+func runCode(opts *commandLineOptions, celCode string, sbomList []string) error {
+	return fmt.Errorf("not implemented yet")
 }

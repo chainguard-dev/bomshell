@@ -5,6 +5,7 @@ import (
 
 	"github.com/chainguard-dev/bomshell/pkg/ui"
 	"github.com/spf13/cobra"
+	"sigs.k8s.io/release-utils/version"
 )
 
 func interactiveCommand() *cobra.Command {
@@ -17,7 +18,7 @@ func interactiveCommand() *cobra.Command {
 	}
 	execCmd := &cobra.Command{
 		PersistentPreRunE: initLogging,
-		Short:             "Launch bomshell interactive workbench",
+		Short:             "Launch bomshell interactive workbench (experimental)",
 		Long: `bomshell interactive sbom.spdx.json → Launch the bomshell interactive workbench
 
 The interactive subcommand launches the bomshell interactive workbench
@@ -25,6 +26,7 @@ The interactive subcommand launches the bomshell interactive workbench
 		Use:           "interactive [sbom.spdx.json...] ",
 		SilenceUsage:  true,
 		SilenceErrors: true,
+		Version:       version.GetVersionInfo().GitVersion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return launchInteractive(commandLineOpts)
 		},

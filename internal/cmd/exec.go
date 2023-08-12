@@ -6,9 +6,10 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"sigs.k8s.io/release-utils/version"
 )
 
-var longHelp = `bomshell: An SBOM Programming Interface
+var longHelp = `💣🐚 bomshell: An SBOM Programming Interface
 
 bomshell is a programmable shell to work with SBOM (Software Bill of Materials) 
 data using CEL expressions (Common Expression Language). bomshell can query and
@@ -47,31 +48,61 @@ func execCommand() *cobra.Command {
 	var execCmd = &cobra.Command{
 		Short:         "Default execution mode (hidden)",
 		Long:          longHelp,
+		Version:       version.GetVersionInfo().GitVersion,
 		Use:           "exec",
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		Hidden:        true,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			// List of SBOMs to prelaod
+			sbomPaths := []string{}
+
 			// TODO(puerco): Detect open STDIN
 
 			// If no file was piped and no args, then print help and exit
-			if len(args) == 0 {
+			if len(args) == 0 && execOpts.ExecLine == "" {
 				return cmd.Help()
 			}
 
-			// If the first argument is a file, then we asume it is code
-			if _, err := os.Stat(args[0]); errors.Is(err, os.ErrNotExist) {
-				// TODO(puerco): Run code
+			// Case 1: Run snippet from the --execute flag
+			if execOpts.ExecLine != "" {
+				sbomPaths = append(sbomPaths, args...)
+				sbomPaths = append(sbomPaths, commandLineOpts.sboms...)
+				if err := runCode(commandLineOpts, execOpts.ExecLine, sbomPaths); err != nil {
+					return fmt.Errorf("running code snippet: %w", err)
+				}
 			}
 
-			// Run the recipe:
-			if err := runFile(commandLineOpts, args[0]); err != nil {
+			// Case 2: If the first argument is not a file, then we asume it is code
+			if _, err := os.Stat(args[0]); errors.Is(err, os.ErrNotExist) {
+				// TODO(puerco): Implemnent code to check if this is code :D
+				if len(args) > 1 {
+					sbomPaths = append(sbomPaths, args[1:]...)
+				}
+				sbomPaths = append(sbomPaths, commandLineOpts.sboms...)
+
+				if err := runCode(commandLineOpts, args[0], sbomPaths); err != nil {
+					return fmt.Errorf("running code snippet: %w", err)
+				}
+			}
+
+			// Case 3: First argument is the recipe file
+			if err := runFile(commandLineOpts, args[0], sbomPaths); err != nil {
+				// TODO(puerco): Implemnent code to check if this is code :D
+				if len(args) > 1 {
+					sbomPaths = append(sbomPaths, args[1:]...)
+				}
+				sbomPaths = append(sbomPaths, commandLineOpts.sboms...)
+
 				return fmt.Errorf("executing recipe: %w", err)
 			}
 
-			return nil
+			cmd.Help()
+			return errors.New("no bomshell recipe sepcified")
 		},
 	}
 
+	execOpts.AddFlags(execCmd)
+	commandLineOpts.AddFlags(execCmd)
 	return execCmd
 }
