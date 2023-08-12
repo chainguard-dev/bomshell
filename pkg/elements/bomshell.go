@@ -29,7 +29,7 @@ func (bs Bomshell) ConvertToNative(typeDesc reflect.Type) (interface{}, error) {
 // ConvertToType implements ref.Val.ConvertToType.
 func (bs Bomshell) ConvertToType(typeVal ref.Type) ref.Val {
 	switch typeVal {
-	case DocumentTypeValue:
+	case DocumentType:
 		return bs
 	case types.TypeType:
 		return BomshellTypeValue

@@ -4,6 +4,7 @@
 package functions
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/bom-squad/protobom/pkg/sbom"
@@ -85,10 +86,17 @@ var Packages = func(lhs ref.Val) ref.Val {
 	nl := elements.NodeList{
 		NodeList: &sbom.NodeList{},
 	}
-	bom, ok := lhs.Value().(*sbom.Document)
-	if !ok {
-		return types.NewErr("unable to convert sbom to native (wrong type?)")
+	var bom *sbom.Document
+
+	switch v := lhs.Value().(type) {
+	case *sbom.Document:
+		bom = v
+	case *elements.Document:
+		bom = v.Document
+	default:
+		return types.NewErr(fmt.Sprintf("unable to convert sbom to native (wrong type?) %T", lhs.Value()))
 	}
+
 	nl.Edges = bom.NodeList.Edges
 	for _, n := range bom.NodeList.Nodes {
 		if n.Type == sbom.Node_PACKAGE {

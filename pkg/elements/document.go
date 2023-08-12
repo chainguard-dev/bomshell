@@ -9,15 +9,12 @@ import (
 
 	"github.com/bom-squad/protobom/pkg/sbom"
 	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/checker/decls"
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
 )
 
 var (
-	DocumentObject    = decls.NewObjectType("bomsquad.protobom.Document")
-	DocumentTypeValue = types.NewTypeValue("bomsquad.protobom.Document")
-	DocumentType      = cel.ObjectType("bomsquad.protobom.Document")
+	DocumentType = cel.ObjectType("bomsquad.protobom.Document")
 )
 
 type Document struct {
@@ -38,11 +35,11 @@ func (d Document) ConvertToNative(typeDesc reflect.Type) (interface{}, error) {
 // ConvertToType implements ref.Val.ConvertToType.
 func (d Document) ConvertToType(typeVal ref.Type) ref.Val {
 	switch typeVal {
-	case DocumentTypeValue:
+	case DocumentType:
 		return d
+		// TODO(puerco): Add sbom.Doc type conversion
 	case types.TypeType:
-		return DocumentTypeValue
-
+		return DocumentType
 	}
 	return types.NewErr("type conversion error from '%s' to '%s'", NodeListTypeValue, typeVal)
 }
@@ -60,10 +57,10 @@ func (d Document) Equal(other ref.Val) ref.Val {
 }
 
 func (d Document) Type() ref.Type {
-	return DocumentTypeValue
+	return DocumentType
 }
 
 // Value implements ref.Val.Value.
 func (d Document) Value() interface{} {
-	return d
+	return d.Document
 }

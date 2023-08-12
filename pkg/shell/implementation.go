@@ -22,7 +22,7 @@ import (
 type BomshellImplementation interface {
 	Compile(*Runner, string) (*cel.Ast, error)
 	Evaluate(*Runner, *cel.Ast, map[string]interface{}) (ref.Val, error)
-	LoadSBOM(io.ReadSeekCloser) (*sbom.Document, error)
+	LoadSBOM(io.ReadSeekCloser) (*elements.Document, error)
 	OpenFile(path string) (*os.File, error)
 	PrintDocumentResult(Options, ref.Val, io.WriteCloser) error
 	ReadRecipeFile(io.Reader) (string, error)
@@ -38,14 +38,14 @@ func (di *DefaultBomshellImplementation) Evaluate(runner *Runner, ast *cel.Ast, 
 	return runner.EvaluateAST(ast, variables)
 }
 
-func (di *DefaultBomshellImplementation) LoadSBOM(stream io.ReadSeekCloser) (*sbom.Document, error) {
+func (di *DefaultBomshellImplementation) LoadSBOM(stream io.ReadSeekCloser) (*elements.Document, error) {
 	r := reader.New()
 	doc, err := r.ParseStream(stream)
 	if err != nil {
 		return nil, fmt.Errorf("parsing SBOM: %w", err)
 	}
 
-	return doc, nil
+	return &elements.Document{doc}, nil
 }
 
 func (di *DefaultBomshellImplementation) OpenFile(path string) (*os.File, error) {
@@ -65,16 +65,16 @@ func (di *DefaultBomshellImplementation) PrintDocumentResult(opts Options, resul
 	// More options?
 
 	// Check to make sure the result is a document
-	if result.Type() != elements.DocumentTypeValue {
+	if result.Type() != elements.DocumentType {
 		return errors.New("error printing result, value is not a document")
 	}
 
-	doc, ok := result.Value().(elements.Document)
+	doc, ok := result.Value().(*sbom.Document)
 	if !ok {
 		return errors.New("error casting result into protobom document")
 	}
 
-	if err := protoWriter.WriteStream(doc.Document, w); err != nil {
+	if err := protoWriter.WriteStream(doc, w); err != nil {
 		return fmt.Errorf("writing document to stream: %w", err)
 	}
 	return nil

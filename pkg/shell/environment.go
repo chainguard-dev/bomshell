@@ -23,12 +23,8 @@ type shellLibrary struct{}
 // use to compile and evaluate programs on the SBOM
 func (shellLibrary) CompileOptions() []cel.EnvOption {
 	return []cel.EnvOption{
-		cel.Types(&elements.Document{}),
-		cel.Types(&elements.NodeList{}),
-		//cel.Types(&elements.Bomshell{}),
-
 		cel.Variable("sboms", cel.MapType(cel.IntType, elements.DocumentType)),
-
+		cel.Variable("sbom", elements.DocumentType),
 		cel.Variable("bomshell", elements.BomshellType),
 
 		cel.Function(

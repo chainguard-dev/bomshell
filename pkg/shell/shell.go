@@ -8,7 +8,6 @@ import (
 	"io"
 
 	"github.com/bom-squad/protobom/pkg/formats"
-	"github.com/bom-squad/protobom/pkg/sbom"
 	"github.com/chainguard-dev/bomshell/pkg/elements"
 	"github.com/google/cel-go/common/types/ref"
 	"github.com/sirupsen/logrus"
@@ -70,7 +69,7 @@ func (bs *Bomshell) RunFile(path string) (ref.Val, error) {
 func (bs *Bomshell) Run(code string) (ref.Val, error) {
 	// Variables that wil be made available in the CEL env
 	vars := map[string]interface{}{}
-	sbomList := []*sbom.Document{}
+	sbomList := []*elements.Document{}
 
 	// Load defined SBOMs into the sboms array
 	if len(bs.Options.SBOMs) > 0 {
@@ -93,7 +92,9 @@ func (bs *Bomshell) Run(code string) (ref.Val, error) {
 
 	// Add the SBOM list to the runtim environment
 	vars["sboms"] = sbomList
-
+	if len(sbomList) > 0 {
+		vars["sbom"] = sbomList[0]
+	}
 	// Add the default bomshell object
 	vars["bomshell"] = elements.Bomshell{}
 
@@ -110,7 +111,7 @@ func (bs *Bomshell) Run(code string) (ref.Val, error) {
 	return result, nil
 }
 
-func (bs *Bomshell) LoadSBOM(path string) (*sbom.Document, error) {
+func (bs *Bomshell) LoadSBOM(path string) (*elements.Document, error) {
 	f, err := bs.impl.OpenFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("opening SBOM file: %w", err)
@@ -133,7 +134,7 @@ func (bs *Bomshell) PrintResult(result ref.Val, w io.WriteCloser) error {
 	}
 
 	switch result.Type() {
-	case elements.DocumentTypeValue:
+	case elements.DocumentType:
 		return bs.impl.PrintDocumentResult(bs.Options, result, w)
 	default:
 		fmt.Printf("TMPRENDER:\nvalue: %v (%T)\n", result.Value(), result)
