@@ -4,10 +4,12 @@
 package shell
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/bom-squad/protobom/pkg/reader"
 	"github.com/bom-squad/protobom/pkg/sbom"
@@ -23,6 +25,7 @@ type BomshellImplementation interface {
 	LoadSBOM(io.ReadSeekCloser) (*sbom.Document, error)
 	OpenFile(path string) (*os.File, error)
 	PrintDocumentResult(Options, ref.Val, io.WriteCloser) error
+	ReadRecipeFile(io.Reader) (string, error)
 }
 
 type DefaultBomshellImplementation struct{}
@@ -75,4 +78,27 @@ func (di *DefaultBomshellImplementation) PrintDocumentResult(opts Options, resul
 		return fmt.Errorf("writing document to stream: %w", err)
 	}
 	return nil
+}
+
+// ReadRecipeFile reads a bomshell recipe file and returns it as a string.
+// This function will look for a pind-bag line at the start of the file and
+// strip it if needed.
+func (di *DefaultBomshellImplementation) ReadRecipeFile(f io.Reader) (string, error) {
+	fileScanner := bufio.NewScanner(f)
+	fileData := ""
+
+	fileScanner.Split(bufio.ScanLines)
+
+	for fileScanner.Scan() {
+		if fileData == "" && strings.HasPrefix(fileScanner.Text(), "#!") {
+			continue
+		}
+		fileData += fileScanner.Text() + "\n"
+	}
+
+	if fileData == "" {
+		return fileData, errors.New("file read resulted in zero bytes")
+	}
+
+	return fileData, nil
 }

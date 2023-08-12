@@ -6,7 +6,6 @@ package shell
 import (
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/bom-squad/protobom/pkg/formats"
 	"github.com/bom-squad/protobom/pkg/sbom"
@@ -51,11 +50,20 @@ func NewWithOptions(opts Options) (*Bomshell, error) {
 	}, nil
 }
 
+// RunFile runs a bomshell recipe from a file
 func (bs *Bomshell) RunFile(path string) (ref.Val, error) {
-	data, err := os.ReadFile(path)
+	f, err := bs.impl.OpenFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("opening file: %w", err)
+	}
+
+	defer f.Close()
+
+	data, err := bs.impl.ReadRecipeFile(f)
 	if err != nil {
 		return nil, fmt.Errorf("reading program data: %w", err)
 	}
+
 	return bs.Run(string(data))
 }
 
