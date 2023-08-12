@@ -1,2 +1,3 @@
 // This bomshell query extracts all packages from the SBOM and returns them
-sbom[0].packages().ToDocument()
+
+sboms[0].packages().ToDocument()
