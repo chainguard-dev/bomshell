@@ -6,7 +6,7 @@ the values of the invocation. The default bomshell invocation is meant to be run
 from the command line. For a more predictable, programatic way of running `bomshell`
 programs see `bomshell run` below.
 
-## The Plain `bomshell`` Command
+## The Plain `bomshell` Command
 
 Typing `bomshell` into your terminal invokes the _smart_ bomshell exec mode.
 In this smart mode, bomshell will try to figure out what to run. It will try
@@ -19,7 +19,7 @@ avaluate its contents as a bomshell program.
 1. __Inline bomshell code.__ If the first positional argument is not a file, 
 bomshell will try to execute its contents as CEL bomshell code.
 
-1. __`-e|--execute` Flag.__ If the `--execute` flag is defined, bomshell will
+1. __The `-e|--execute` Flag.__ If the `--execute` flag is defined, bomshell will
 read its contents and use it as the recipe to run. All positional arguments will
 be interpreted as paths of SBOMs to run into the runtime environment.
 
@@ -39,7 +39,7 @@ runtime environment.
 bomshell run myrecipe.cel sbom1.spdx.json sbom2.cdx.json
 ```
 
-## Piping SBOMs into `bomshell`
+## Reading and Piping SBOMs into `bomshell`
 
 The CLI supports three ways of preloading SBOMs, plus a fourth one at run time.
 
@@ -63,9 +63,22 @@ the default `bomshell` mode support piping SBOMs to the runtime. Here is an exam
 cat sbom.spdx.json | bomshell 'sbom.packages().ToDocument()'
 ```
 
-### SBOM Ordering and Access at Runtime
+For convenience, a global `sbom` variable is always available. It stores the 
+first SBOM loaded into the runtime.
 
-ALl SBOMs preloaded at runtime are loaded and available at runtime in the global
+## Loading SBOMs at Runtime
+
+The global `bomshell` object exposed in the envrionment has a `LoadSBOM()` method
+which can be used to load more documents at runtime. SBOMs loaded using `LoadSBOM()`
+can be stored in the `sboms` collection or bound to new variables. Here is an example:
+
+```
+bomshell.LoadSBOM("myfile.spdx.json").Files()s
+```
+
+## The SBOM Collection: Ordering
+
+Al SBOMs preloaded at runtime are loaded and available at runtime in the global
 `sboms` collection. This global variable is a map, integer based where all SBOMs
 are stored in the order they were defined.
 
@@ -78,5 +91,4 @@ be any SBOMs defined as positional arguments.
 1. Files defined using `--sbom`. Finally any SBOMs defined using the `--sbom` flag
 will be the last ones appended to the global SBOM collection.
 
-For convenience, a global `sbom` variable is always available. It stores the 
-first SBOM loaded into the runtime.
+Documents loaded can also be reflected in variables outside of the collection.
