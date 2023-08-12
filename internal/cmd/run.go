@@ -19,9 +19,11 @@ func runCommand() *cobra.Command {
 		Example:           "bomshell run program.cel [sbom.spdx.json]...",
 		Long: appName + ` run recipe.cel sbom.spdx.json → Execute a bomshell program
 
-The exec subcommand executes a cell program in a file and outputs the result.
-It can optionally load an SBOM into the environment and make it available to
-the program statements.
+The exec subcommand executes a cell program from a file and outputs the result.
+
+bomshell expects the program in the first positional argument. The rest of 
+arguments hold paths to SBOMs which will be preloaded and made available in
+the runtime environment (see the --sbom flag too).
 `,
 		Use:           "run",
 		Version:       version.GetVersionInfo().GitVersion,
@@ -38,7 +40,9 @@ the program statements.
 				sbomPaths = append(sbomPaths, args[1:]...)
 			}
 
-			return runFile(commandLineOpts, args[0], append(sbomPaths, commandLineOpts.sboms...))
+			return runFile(
+				commandLineOpts, args[0], append(sbomPaths, commandLineOpts.sboms...),
+			)
 		},
 	}
 	execOpts.AddFlags(runCmd)
@@ -47,6 +51,9 @@ the program statements.
 	return runCmd
 }
 
+// buildShell creates the bomshell environment, preconfigured with the defined
+// options. All SBOMs in the sbomList variable will be read and exposed in the
+// runtime environment.
 func buildShell(opts *commandLineOptions, sbomList []string) (*shell.Bomshell, error) {
 	bomshell, err := shell.NewWithOptions(shell.Options{
 		SBOMs:  sbomList,
