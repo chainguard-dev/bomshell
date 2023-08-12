@@ -54,7 +54,6 @@ func (di *DefaultBomshellImplementation) OpenFile(path string) (*os.File, error)
 		return nil, fmt.Errorf("opening SBOM file: %w", err)
 	}
 	return f, nil
-
 }
 
 // PrintDocumentResult takes a document result from a bomshell query and outputs it

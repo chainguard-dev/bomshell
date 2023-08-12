@@ -69,5 +69,4 @@ func reconnectOrphanNodes(nl *elements.NodeList) {
 			}
 		}
 	}
-
 }

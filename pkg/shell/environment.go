@@ -171,18 +171,18 @@ func Library() cel.EnvOption {
 	return cel.Lib(shellLibrary{})
 }
 
-type customTypeAdapter struct {
-}
+type customTypeAdapter struct{}
 
 func (customTypeAdapter) NativeToValue(value interface{}) ref.Val {
 	val, ok := value.(elements.Bomshell)
 	if ok {
 		return val
 	} else {
-		//let the default adapter handle other cases
+		// let the default adapter handle other cases
 		return types.DefaultTypeAdapter.NativeToValue(value)
 	}
 }
+
 func createEnvironment(opts *Options) (*cel.Env, error) {
 	env, err := cel.NewEnv(
 		cel.CustomTypeAdapter(&customTypeAdapter{}),

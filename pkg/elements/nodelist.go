@@ -44,7 +44,6 @@ func (nl NodeList) ConvertToType(typeVal ref.Type) ref.Val {
 		return nl
 	case types.TypeType:
 		return NodeListTypeValue
-
 	}
 	return types.NewErr("type conversion error from '%s' to '%s'", NodeListTypeValue, typeVal)
 }

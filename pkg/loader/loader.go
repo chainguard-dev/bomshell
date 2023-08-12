@@ -28,5 +28,4 @@ func OpenFile(path string) (*os.File, error) {
 		return nil, fmt.Errorf("opening SBOM file: %w", err)
 	}
 	return f, nil
-
 }

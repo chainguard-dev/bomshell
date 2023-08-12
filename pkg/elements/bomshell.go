@@ -33,7 +33,6 @@ func (bs Bomshell) ConvertToType(typeVal ref.Type) ref.Val {
 		return bs
 	case types.TypeType:
 		return BomshellTypeValue
-
 	}
 	return types.NewErr("type conversion error not allowed in bomshell")
 }

@@ -190,8 +190,6 @@ var NodesByPurlType = func(lhs, rhs ref.Val) ref.Val {
 	}
 }
 
-// "", sbom[2].GetNodesByPurlType("golang"), "DEPENDS_ON"
-// var RelateNodeListAtID = func(lhs, rawNl, rawId, rawRel ref.Val) ref.Val {
 var RelateNodeListAtID = func(vals ...ref.Val) ref.Val {
 	if len(vals) != 4 {
 		return types.NewErr("invalid number of arguments for RealteAtNodeListAtID")

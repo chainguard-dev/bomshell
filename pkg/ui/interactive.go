@@ -174,13 +174,15 @@ type Interactive struct {
 }
 
 func (i *Interactive) Start() error {
-	_, err := i.ui.Run()
-	return err
+	if _, err := i.ui.Run(); err != nil {
+		return fmt.Errorf("starting UI: %w", err)
+	}
+	return nil
 }
 
 func NewInteractive() (*Interactive, error) {
 	bomshell, err := shell.NewWithOptions(shell.Options{
-		//SBOM:   sbomPath,
+		// SBOM:   sbomPath,
 		Format: shell.DefaultFormat,
 	})
 	if err != nil {
@@ -196,7 +198,7 @@ func NewInteractive() (*Interactive, error) {
 		ui: tea.NewProgram(
 			initModel(bomshell),
 			tea.WithAltScreen(),
-			//tea.WithMouseCellMotion(),
+			// tea.WithMouseCellMotion(),
 		),
 	}, nil
 }

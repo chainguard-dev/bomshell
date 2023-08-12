@@ -63,7 +63,7 @@ func (bs *Bomshell) RunFile(path string) (ref.Val, error) {
 		return nil, fmt.Errorf("reading program data: %w", err)
 	}
 
-	return bs.Run(string(data))
+	return bs.Run(data)
 }
 
 func (bs *Bomshell) Run(code string) (ref.Val, error) {

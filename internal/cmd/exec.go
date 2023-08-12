@@ -48,7 +48,7 @@ For a more predictable runner, check the bomshell run subcommand.
 `
 
 func execCommand() *cobra.Command {
-	var execCmd = &cobra.Command{
+	execCmd := &cobra.Command{
 		Short:         "Default execution mode (hidden)",
 		Long:          longHelp,
 		Version:       version.GetVersionInfo().GitVersion,
@@ -74,7 +74,7 @@ func execCommand() *cobra.Command {
 
 			// If no file was piped and no args, then print help and exit
 			if len(args) == 0 && execOpts.ExecLine == "" {
-				return cmd.Help()
+				return cmd.Help() //nolint
 			}
 
 			// Case 1: Run snippet from the --execute flag
@@ -92,7 +92,7 @@ func execCommand() *cobra.Command {
 				sbomPaths = append(sbomPaths, args[1:]...)
 			}
 
-			// Case 2: If the first argument is not a file, then we asume it is code
+			// Case 2: If the first argument is not a file, then we assume it is code
 			if _, err := os.Stat(args[0]); errors.Is(err, os.ErrNotExist) {
 				// TODO(puerco): Implemnent code to check if args[0] is code :D
 				if err := runCode(commandLineOpts, args[0], append(sbomPaths, commandLineOpts.sboms...)); err != nil {

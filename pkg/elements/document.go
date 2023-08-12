@@ -13,9 +13,7 @@ import (
 	"github.com/google/cel-go/common/types/ref"
 )
 
-var (
-	DocumentType = cel.ObjectType("bomsquad.protobom.Document")
-)
+var DocumentType = cel.ObjectType("bomsquad.protobom.Document")
 
 type Document struct {
 	*sbom.Document
@@ -51,7 +49,7 @@ func (d Document) Equal(other ref.Val) ref.Val {
 		return types.MaybeNoSuchOverloadErr(other)
 	}
 
-	// TODO: Moar tests like:
+	// TODO(puerco): Moar tests like:
 	// return types.Bool(d.URL.String() == otherDur.URL.String())
 	return types.True
 }

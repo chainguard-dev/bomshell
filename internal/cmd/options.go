@@ -35,14 +35,14 @@ func (o *commandLineOptions) AddFlags(cmd *cobra.Command) {
 		&o.DocumentFormat,
 		"document-format",
 		string(shell.DefaultFormat),
-		fmt.Sprintf("format to output generated documents"),
+		"format to output generated documents",
 	)
 
 	cmd.PersistentFlags().StringVar(
 		&o.NodeListFormat,
 		"nodelist-format",
 		commandLineOpts.NodeListFormat,
-		fmt.Sprintf("format to output nodelsits (SBOM fragments)"),
+		"format to output nodelsits (SBOM fragments)",
 	)
 
 	cmd.PersistentFlags().StringArrayVar(
@@ -66,6 +66,6 @@ func (eo *execOptions) AddFlags(cmd *cobra.Command) {
 		"exec",
 		"e",
 		"",
-		fmt.Sprintf("CEL code to execute (overrides filename)"),
+		"CEL code to execute (overrides filename)",
 	)
 }

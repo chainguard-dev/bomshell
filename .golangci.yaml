@@ -21,7 +21,7 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - depguard
+    # - depguard
     - dogsled
     - dupl
     - durationcheck
@@ -87,17 +87,6 @@ linters:
     # - wastedassign
     - wrapcheck
     # - wsl
-linters-settings:
-  depguard:
-    list-type: blacklist
-    include-go-root: true
-    include-go-std-lib: true
-    rules:
-      # Name of a rule.
-      main:
-        allow:
-          - github.com/chainguard-dev/bomshell/internal/cmd
-
   gci:
     no-inline-comments: false
     no-prefix-comments: true

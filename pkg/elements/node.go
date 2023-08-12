@@ -42,7 +42,6 @@ func (n Node) ConvertToType(typeVal ref.Type) ref.Val {
 		return n
 	case types.TypeType:
 		return NodeTypeValue
-
 	}
 	return types.NewErr("type conversion error from '%s' to '%s'", NodeListTypeValue, typeVal)
 }
@@ -68,7 +67,7 @@ func (n Node) Value() interface{} {
 	return n
 }
 
-// ToNodeList returns a new NodeList with the node as the only memeber
+// ToNodeList returns a new NodeList with the node as the only member
 func (n Node) ToNodeList() *NodeList {
 	return &NodeList{
 		NodeList: &sbom.NodeList{
