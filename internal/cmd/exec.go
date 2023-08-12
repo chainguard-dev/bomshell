@@ -60,7 +60,17 @@ func execCommand() *cobra.Command {
 			// List of SBOMs to prelaod
 			sbomPaths := []string{}
 
-			// TODO(puerco): Detect open STDIN
+			// If there is an SBOM piped through STDIN, it will always
+			// be SBOM #0 in our list
+			stdinSBOM, err := testStdin()
+			if err != nil {
+				return fmt.Errorf("checking STDIN for a piped SBOM")
+			}
+
+			if stdinSBOM != "" {
+				sbomPaths = append(sbomPaths, stdinSBOM)
+				defer os.Remove(stdinSBOM)
+			}
 
 			// If no file was piped and no args, then print help and exit
 			if len(args) == 0 && execOpts.ExecLine == "" {
@@ -92,7 +102,6 @@ func execCommand() *cobra.Command {
 			}
 
 			// Case 3: First argument is the recipe file
-
 			if err := runFile(commandLineOpts, args[0], append(sbomPaths, commandLineOpts.sboms...)); err != nil {
 				return fmt.Errorf("executing recipe: %w", err)
 			}

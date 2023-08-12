@@ -6,6 +6,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/bom-squad/protobom/pkg/formats"
@@ -89,11 +90,36 @@ func runCode(opts *commandLineOptions, celCode string, sbomList []string) error 
 	if err != nil {
 		return err
 	}
-
 	result, err := bomshell.Run(celCode)
 	if err != nil {
 		return fmt.Errorf("executing program: %w", err)
 	}
 
 	return bomshell.PrintResult(result, os.Stdout)
+}
+
+// testStdin check to see if STDIN can be opened for reading. If it can, then
+// this function will read all the input to a file and return the path
+func testStdin() (string, error) {
+	fi, err := os.Stdin.Stat()
+	if err != nil {
+		return "", fmt.Errorf("checking stdin for data: %w", err)
+	}
+	if (fi.Mode() & os.ModeCharDevice) != 0 {
+		return "", nil
+	}
+
+	f, err := os.CreateTemp("", "protobom-input-*")
+	if err != nil {
+		return "", fmt.Errorf("opening temporary file: %w", err)
+	}
+
+	if _, err := io.Copy(f, os.Stdin); err != nil {
+		os.Remove(f.Name())
+		return "", fmt.Errorf("copying STDIN to temporary file: %w", err)
+	}
+
+	logrus.Infof("buffered STDIN to %s", f.Name())
+
+	return f.Name(), nil
 }
