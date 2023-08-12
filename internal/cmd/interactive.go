@@ -42,7 +42,7 @@ The interactive subcommand launches the bomshell interactive workbench
 	return execCmd
 }
 
-func launchInteractive(opts *commandLineOptions) error {
+func launchInteractive(_ *commandLineOptions) error {
 	i, err := ui.NewInteractive()
 	if err != nil {
 		return fmt.Errorf("creating interactive env: %w", err)

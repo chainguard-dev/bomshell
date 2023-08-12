@@ -135,7 +135,10 @@ func (bs *Bomshell) PrintResult(result ref.Val, w io.WriteCloser) error {
 
 	switch result.Type() {
 	case elements.DocumentType:
-		return bs.impl.PrintDocumentResult(bs.Options, result, w)
+		if err := bs.impl.PrintDocumentResult(bs.Options, result, w); err != nil {
+			return fmt.Errorf("printing results: %w", err)
+		}
+		return nil
 	default:
 		fmt.Printf("TMPRENDER:\nvalue: %v (%T)\n", result.Value(), result)
 		return nil

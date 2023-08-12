@@ -39,7 +39,7 @@ func (d Document) ConvertToType(typeVal ref.Type) ref.Val {
 	case types.TypeType:
 		return DocumentType
 	}
-	return types.NewErr("type conversion error from '%s' to '%s'", NodeListTypeValue, typeVal)
+	return types.NewErr("type conversion error from '%s' to '%s'", DocumentType, typeVal)
 }
 
 // Equal implements ref.Val.Equal.

@@ -15,9 +15,8 @@ import (
 )
 
 var (
-	BomshellObject    = decls.NewObjectType("bomshell")
-	BomshellTypeValue = types.NewTypeValue("bomshell", traits.ReceiverType)
-	BomshellType      = cel.ObjectType("bomshell")
+	BomshellObject = decls.NewObjectType("bomshell")
+	BomshellType   = cel.ObjectType("bomshell", traits.ReceiverType)
 )
 
 type Bomshell struct{}
@@ -32,7 +31,7 @@ func (bs Bomshell) ConvertToType(typeVal ref.Type) ref.Val {
 	case DocumentType:
 		return bs
 	case types.TypeType:
-		return BomshellTypeValue
+		return BomshellType
 	}
 	return types.NewErr("type conversion error not allowed in bomshell")
 }
@@ -43,7 +42,7 @@ func (bs Bomshell) Equal(other ref.Val) ref.Val {
 }
 
 func (bs Bomshell) Type() ref.Type {
-	return BomshellTypeValue
+	return BomshellType
 }
 
 // Value implements ref.Val.Value.

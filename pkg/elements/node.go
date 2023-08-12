@@ -15,9 +15,8 @@ import (
 )
 
 var (
-	NodeObject    = decls.NewObjectType("bomsquad.protobom.Node")
-	NodeTypeValue = types.NewTypeValue("bomsquad.protobom.Node")
-	NodeType      = cel.ObjectType("bomsquad.protobom.Node")
+	NodeObject = decls.NewObjectType("bomsquad.protobom.Node")
+	NodeType   = cel.ObjectType("bomsquad.protobom.Node")
 )
 
 type Node struct {
@@ -38,12 +37,12 @@ func (n Node) ConvertToNative(typeDesc reflect.Type) (interface{}, error) {
 // ConvertToType implements ref.Val.ConvertToType.
 func (n Node) ConvertToType(typeVal ref.Type) ref.Val {
 	switch typeVal {
-	case NodeTypeValue:
+	case NodeType:
 		return n
 	case types.TypeType:
-		return NodeTypeValue
+		return NodeType
 	}
-	return types.NewErr("type conversion error from '%s' to '%s'", NodeListTypeValue, typeVal)
+	return types.NewErr("type conversion error from '%s' to '%s'", NodeType, typeVal)
 }
 
 // Equal implements ref.Val.Equal.
@@ -59,7 +58,7 @@ func (n Node) Equal(other ref.Val) ref.Val {
 }
 
 func (n Node) Type() ref.Type {
-	return NodeTypeValue
+	return NodeType
 }
 
 // Value implements ref.Val.Value.

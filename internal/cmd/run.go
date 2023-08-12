@@ -64,7 +64,7 @@ func buildShell(opts *commandLineOptions, sbomList []string) (*shell.Bomshell, e
 		Format: formats.Format(opts.DocumentFormat),
 	})
 	if err != nil {
-		logrus.Fatalf("creating bomshell: %v", err)
+		return nil, fmt.Errorf("creating bomshell: %w", err)
 	}
 	return bomshell, nil
 }
@@ -81,7 +81,7 @@ func runFile(opts *commandLineOptions, recipePath string, sbomList []string) err
 		return fmt.Errorf("executing program: %w", err)
 	}
 
-	return bomshell.PrintResult(result, os.Stdout)
+	return bomshell.PrintResult(result, os.Stdout) //nolint
 }
 
 // runCode creates and configures a bomshell instance to run a recipe from a string
@@ -95,7 +95,7 @@ func runCode(opts *commandLineOptions, celCode string, sbomList []string) error 
 		return fmt.Errorf("executing program: %w", err)
 	}
 
-	return bomshell.PrintResult(result, os.Stdout)
+	return bomshell.PrintResult(result, os.Stdout) //nolint
 }
 
 // testStdin check to see if STDIN can be opened for reading. If it can, then

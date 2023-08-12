@@ -12,9 +12,9 @@ import (
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
 	"github.com/google/cel-go/ext"
-	//"github.com/google/cel-go/common/operators"
-	//"github.com/google/cel-go/common/types/traits"
-	//celfuncs "github.com/google/cel-go/interpreter/functions"
+	// "github.com/google/cel-go/common/operators"
+	// "github.com/google/cel-go/common/types/traits"
+	// celfuncs "github.com/google/cel-go/interpreter/functions"
 )
 
 type shellLibrary struct{}
@@ -82,11 +82,11 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 			"NodeByID",
 			cel.MemberOverload(
 				"sbom_nodebyid_binding", []*cel.Type{elements.DocumentType, cel.StringType}, elements.NodeType,
-				cel.BinaryBinding(functions.NodeById),
+				cel.BinaryBinding(functions.NodeByID),
 			),
 			cel.MemberOverload(
 				"nodelist_nodebyid_binding", []*cel.Type{elements.NodeListType, cel.StringType}, elements.NodeType,
-				cel.BinaryBinding(functions.NodeById),
+				cel.BinaryBinding(functions.NodeByID),
 			),
 		),
 
@@ -183,7 +183,7 @@ func (customTypeAdapter) NativeToValue(value interface{}) ref.Val {
 	}
 }
 
-func createEnvironment(opts *Options) (*cel.Env, error) {
+func createEnvironment(_ *Options) (*cel.Env, error) {
 	env, err := cel.NewEnv(
 		cel.CustomTypeAdapter(&customTypeAdapter{}),
 		Library(),

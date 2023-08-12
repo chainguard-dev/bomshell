@@ -12,7 +12,6 @@ import (
 
 type Runner struct {
 	Environment *cel.Env
-	options     Options
 	impl        RunnerImplementation
 }
 

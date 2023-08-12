@@ -15,9 +15,8 @@ import (
 )
 
 var (
-	NodeListObject    = decls.NewObjectType("bomsquad.protobom.NodeList")
-	NodeListTypeValue = types.NewTypeValue("bomsquad.protobom.NodeList")
-	NodeListType      = cel.ObjectType("bomsquad.protobom.NodeList")
+	NodeListObject = decls.NewObjectType("bomsquad.protobom.NodeList")
+	NodeListType   = cel.ObjectType("bomsquad.protobom.NodeList")
 )
 
 type NodeList struct {
@@ -31,21 +30,18 @@ func (nl NodeList) ConvertToNative(typeDesc reflect.Type) (interface{}, error) {
 	} else if reflect.TypeOf(nl.NodeList).AssignableTo(typeDesc) {
 		return nl.NodeList, nil
 	}
-	//if reflect.TypeOf("").AssignableTo(typeDesc) {
-	//		return d.URL.String(), nil
-	//	}
 	return nil, fmt.Errorf("type conversion error from 'NodeList' to '%v'", typeDesc)
 }
 
 // ConvertToType implements ref.Val.ConvertToType.
 func (nl NodeList) ConvertToType(typeVal ref.Type) ref.Val {
 	switch typeVal {
-	case NodeListTypeValue:
+	case NodeListType:
 		return nl
 	case types.TypeType:
-		return NodeListTypeValue
+		return NodeListType
 	}
-	return types.NewErr("type conversion error from '%s' to '%s'", NodeListTypeValue, typeVal)
+	return types.NewErr("type conversion error from '%s' to '%s'", NodeListType, typeVal)
 }
 
 // Equal implements ref.Val.Equal.
@@ -63,7 +59,7 @@ func (nl NodeList) Equal(other ref.Val) ref.Val {
 
 // Type implements ref.Val.Type.
 func (nl NodeList) Type() ref.Type {
-	return NodeListTypeValue
+	return NodeListType
 }
 
 // Value implements ref.Val.Value.

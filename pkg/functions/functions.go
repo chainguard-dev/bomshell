@@ -39,8 +39,8 @@ var AdditionOp = func(vals ...ref.Val) ref.Val {
 	}
 }
 
-// ElementById returns a Node matching with the specified ID
-var NodeById = func(lhs, rawID ref.Val) ref.Val {
+// NodeByID returns a Node matching the specified ID
+var NodeByID = func(lhs, rawID ref.Val) ref.Val {
 	queryID, ok := rawID.Value().(string)
 	if !ok {
 		return types.NewErr("argument to element by id has to be a string")
@@ -110,7 +110,7 @@ var Packages = func(lhs ref.Val) ref.Val {
 }
 
 var ToDocument = func(lhs ref.Val) ref.Val {
-	if lhs.Type() != elements.NodeListTypeValue {
+	if lhs.Type() != elements.NodeListType {
 		return types.NewErr("documents can be created only from nodelists")
 	}
 

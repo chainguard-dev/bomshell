@@ -45,7 +45,7 @@ func (di *DefaultBomshellImplementation) LoadSBOM(stream io.ReadSeekCloser) (*el
 		return nil, fmt.Errorf("parsing SBOM: %w", err)
 	}
 
-	return &elements.Document{doc}, nil
+	return &elements.Document{Document: doc}, nil
 }
 
 func (di *DefaultBomshellImplementation) OpenFile(path string) (*os.File, error) {
