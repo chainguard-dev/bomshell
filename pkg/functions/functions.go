@@ -79,6 +79,7 @@ var Files = func(lhs ref.Val) ref.Val {
 		}
 	}
 	cleanEdges(&nl)
+	reconnectOrphanNodes(&nl)
 	return nl
 }
 
@@ -104,6 +105,7 @@ var Packages = func(lhs ref.Val) ref.Val {
 		}
 	}
 	cleanEdges(&nl)
+	reconnectOrphanNodes(&nl)
 	return nl
 }
 

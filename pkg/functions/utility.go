@@ -6,10 +6,11 @@ package functions
 import (
 	"github.com/bom-squad/protobom/pkg/sbom"
 	"github.com/chainguard-dev/bomshell/pkg/elements"
+	"github.com/sirupsen/logrus"
 )
 
-// cleanEdges removes all edges that have broken Froms and remove
-// any destination IDs from elements no not in the NodeList.
+// cleanEdges removes all edges that have broken Froms and removes
+// any destination IDs from elements not in the NodeList.
 func cleanEdges(nl *elements.NodeList) {
 	// First copy the nodelist edges
 	newEdges := []*sbom.Edge{}
@@ -45,7 +46,7 @@ func cleanEdges(nl *elements.NodeList) {
 }
 
 // reconnectOrphanNodes cleans the graph structure by reconnecting all
-// orphaned nodes to the top og the graph
+// orphaned nodes to the top of the graph
 func reconnectOrphanNodes(nl *elements.NodeList) {
 	edgeIndex := map[string]struct{}{}
 	rootIndex := map[string]struct{}{}
@@ -64,6 +65,7 @@ func reconnectOrphanNodes(nl *elements.NodeList) {
 		if _, ok := edgeIndex[n.Id]; !ok {
 			if _, ok := rootIndex[n.Id]; !ok {
 				nl.NodeList.RootElements = append(nl.NodeList.RootElements, n.Id)
+				logrus.Infof("Added orphan node %s", n.Id)
 			}
 		}
 	}
