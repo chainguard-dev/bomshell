@@ -71,34 +71,29 @@ func execCommand() *cobra.Command {
 				if err := runCode(commandLineOpts, execOpts.ExecLine, sbomPaths); err != nil {
 					return fmt.Errorf("running code snippet: %w", err)
 				}
+				return nil
+			}
+
+			// The next two cases take SBOMs from arg[1] on
+			if len(args) > 1 {
+				sbomPaths = append(sbomPaths, args[1:]...)
 			}
 
 			// Case 2: If the first argument is not a file, then we asume it is code
 			if _, err := os.Stat(args[0]); errors.Is(err, os.ErrNotExist) {
-				// TODO(puerco): Implemnent code to check if this is code :D
-				if len(args) > 1 {
-					sbomPaths = append(sbomPaths, args[1:]...)
-				}
-				sbomPaths = append(sbomPaths, commandLineOpts.sboms...)
-
-				if err := runCode(commandLineOpts, args[0], sbomPaths); err != nil {
+				// TODO(puerco): Implemnent code to check if args[0] is code :D
+				if err := runCode(commandLineOpts, args[0], append(sbomPaths, commandLineOpts.sboms...)); err != nil {
 					return fmt.Errorf("running code snippet: %w", err)
 				}
+				return nil
 			}
 
 			// Case 3: First argument is the recipe file
-			if err := runFile(commandLineOpts, args[0], sbomPaths); err != nil {
-				// TODO(puerco): Implemnent code to check if this is code :D
-				if len(args) > 1 {
-					sbomPaths = append(sbomPaths, args[1:]...)
-				}
-				sbomPaths = append(sbomPaths, commandLineOpts.sboms...)
 
+			if err := runFile(commandLineOpts, args[0], append(sbomPaths, commandLineOpts.sboms...)); err != nil {
 				return fmt.Errorf("executing recipe: %w", err)
 			}
-
-			cmd.Help()
-			return errors.New("no bomshell recipe sepcified")
+			return nil
 		},
 	}
 

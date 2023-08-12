@@ -17,15 +17,15 @@ func runCommand() *cobra.Command {
 		PersistentPreRunE: initLogging,
 		Short:             "Run bomshell recipe files",
 		Example:           "bomshell run program.cel [sbom.spdx.json]...",
-		Long: `bomshell exec recipe.cel sbom.spdx.json → Execute a bomshell program
+		Long: appName + ` run recipe.cel sbom.spdx.json → Execute a bomshell program
 
 The exec subcommand executes a cell program in a file and outputs the result.
 It can optionally load an SBOM into the environment and make it available to
 the program statements.
 `,
-		Use:           "run program.cel [sbom.spdx.json] ",
+		Use:           "run",
 		Version:       version.GetVersionInfo().GitVersion,
-		SilenceUsage:  true,
+		SilenceUsage:  false,
 		SilenceErrors: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) == 0 {
@@ -37,9 +37,8 @@ the program statements.
 			if len(args) > 1 {
 				sbomPaths = append(sbomPaths, args[1:]...)
 			}
-			sbomPaths = append(sbomPaths, commandLineOpts.sboms...)
 
-			return runFile(commandLineOpts, args[0], sbomPaths)
+			return runFile(commandLineOpts, args[0], append(sbomPaths, commandLineOpts.sboms...))
 		},
 	}
 	execOpts.AddFlags(runCmd)
@@ -74,7 +73,17 @@ func runFile(opts *commandLineOptions, recipePath string, sbomList []string) err
 	return bomshell.PrintResult(result, os.Stdout)
 }
 
-// runFile creates and configures a bomshell instance to run a recipe from a string
+// runCode creates and configures a bomshell instance to run a recipe from a string
 func runCode(opts *commandLineOptions, celCode string, sbomList []string) error {
-	return fmt.Errorf("not implemented yet")
+	bomshell, err := buildShell(opts, sbomList)
+	if err != nil {
+		return err
+	}
+
+	result, err := bomshell.Run(celCode)
+	if err != nil {
+		return fmt.Errorf("executing program: %w", err)
+	}
+
+	return bomshell.PrintResult(result, os.Stdout)
 }

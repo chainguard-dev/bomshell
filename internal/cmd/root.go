@@ -43,22 +43,15 @@ func rootCommand() *cobra.Command {
 }
 
 func Execute() {
-	root := rootCommand()
-
 	if len(os.Args) > 1 {
-		pcmd := os.Args[1]
-		if pcmd == "completion" || pcmd == "--version" || pcmd == "exec" || pcmd == "version" {
-			return
+		switch os.Args[1] {
+		case "completion", "exec", "version", "interactive", "run":
+		default:
+			os.Args = append([]string{os.Args[0], "exec"}, os.Args[1:]...)
 		}
-		for _, command := range root.Commands() {
-			if command.Use == pcmd {
-				return
-			}
-		}
-		os.Args = append([]string{os.Args[0], "exec"}, os.Args[1:]...)
 	}
 
-	if err := root.Execute(); err != nil {
+	if err := rootCommand().Execute(); err != nil {
 		logrus.Fatal(err)
 	}
 }
