@@ -1,11 +1,11 @@
 module github.com/chainguard-dev/bomshell
 
-replace github.com/bom-squad/protobom => ../bom-squad/protobom/
+// replace github.com/bom-squad/protobom => ../bom-squad/protobom/
 
 go 1.20
 
 require (
-	github.com/bom-squad/protobom v0.0.0-20230711123823-aa72f5a9252d
+	github.com/bom-squad/protobom v0.1.1-0.20230810004809-4bf25166a362
 	github.com/charmbracelet/bubbletea v0.24.1
 	github.com/charmbracelet/lipgloss v0.7.1
 	github.com/sirupsen/logrus v1.9.3
