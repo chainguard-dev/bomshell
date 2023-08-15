@@ -26,8 +26,6 @@ builds:
       - amd64
       - arm64
       - arm
-      - s390x
-      - ppc64le
     goarm:
       - '7'
     ignore:
@@ -39,25 +37,33 @@ builds:
         goarch: s390x
       - goos: windows
         goarch: ppc64le
+      - goos: linux
+        goarch: ppc64le
+      - goos: linux
+        goarch: s390x
     ldflags:
       - "{{ .Env.LDFLAGS }}"
     env:
       - CGO_ENABLED=0
 
 signs:
-  # Keyless
-  - id: binary-keyless
+  - id: sbom
     signature: "${artifact}.sig"
     certificate: "${artifact}.pem"
     cmd: cosign
     args: ["sign-blob", "--output-signature", "${artifact}.sig", "--output-certificate", "${artifact}.pem", "${artifact}"]
-    artifacts: binary
-  - id: checksum-keyless
-    signature: "${artifact}.sig"
-    certificate: "${artifact}.pem"
-    cmd: cosign
-    args: ["sign-blob", "--output-signature", "${artifact}.sig", "--output-certificate", "${artifact}.pem", "${artifact}"]
-    artifacts: checksum
+    artifacts: sbom
+
+source:
+  enabled: true
+  name_template: '{{ .ProjectName }}-{{ .Version }}'
+
+sboms:
+  - documents:
+      - "{{ .ProjectName }}-{{ .Version }}.spdx.json"
+    cmd: bom
+    args: ["generate", "-c", "../.bom.yaml", "-o", "{{ .ProjectName }}-{{ .Version }}.spdx.json", "--format=json"]
+    artifacts: source
 
 archives:
   - format: binary
@@ -72,4 +78,4 @@ snapshot:
 
 release:
   prerelease: allow
-  draft: true # allow for manual edits
+  draft: false # allow for manual edits

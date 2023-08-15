@@ -7,46 +7,40 @@ creator:
 
 artifacts:
   - type: directory
-    source: .
+    source: ../
     license: Apache-2.0
     gomodules: true
 
   - type: file
-    source: bomshell-amd64-windows.exe
+    source: bomshell-windows-amd64.exe
     license: Apache-2.0
     gomodules: true
 
   - type: file
-    source: bomshell-amd64-darwin
+    source: bomshell-darwin-arm64
     license: Apache-2.0
     gomodules: true
 
   - type: file
-    source: bomshell-amd64-linux
+    source: bomshell-darwin-amd64
     license: Apache-2.0
     gomodules: true
 
   - type: file
-    source: bomshell-arm-linux
+    source: bomshell-linux-amd64
     license: Apache-2.0
     gomodules: true
 
   - type: file
-    source: bomshell-arm64-darwin
+    source: bomshell-linux-arm64
     license: Apache-2.0
     gomodules: true
 
   - type: file
-    source: bomshell-arm64-linux
+    source: bomshell-linux-arm
     license: Apache-2.0
     gomodules: true
 
-  - type: file
-    source: bomshell-ppc64le-linux
-    license: Apache-2.0
-    gomodules: true
 
-  - type: file
-    source: bomshell-s390x-linux
-    license: Apache-2.0
-    gomodules: true
+
+
