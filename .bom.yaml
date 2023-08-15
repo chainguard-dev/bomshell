@@ -1,0 +1,52 @@
+---
+license: Apache-2.0
+name: bomshell
+creator:
+ person: Chainguard, Inc
+ tool: bom
+
+artifacts:
+  - type: directory
+    source: .
+    license: Apache-2.0
+    gomodules: true
+
+  - type: file
+    source: bomshell-amd64-windows.exe
+    license: Apache-2.0
+    gomodules: true
+
+  - type: file
+    source: bomshell-amd64-darwin
+    license: Apache-2.0
+    gomodules: true
+
+  - type: file
+    source: bomshell-amd64-linux
+    license: Apache-2.0
+    gomodules: true
+
+  - type: file
+    source: bomshell-arm-linux
+    license: Apache-2.0
+    gomodules: true
+
+  - type: file
+    source: bomshell-arm64-darwin
+    license: Apache-2.0
+    gomodules: true
+
+  - type: file
+    source: bomshell-arm64-linux
+    license: Apache-2.0
+    gomodules: true
+
+  - type: file
+    source: bomshell-ppc64le-linux
+    license: Apache-2.0
+    gomodules: true
+
+  - type: file
+    source: bomshell-s390x-linux
+    license: Apache-2.0
+    gomodules: true
