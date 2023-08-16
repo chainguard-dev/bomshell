@@ -6,7 +6,7 @@ go 1.20
 
 require (
 	github.com/bom-squad/protobom v0.1.1-0.20230810004809-4bf25166a362
-	github.com/charmbracelet/bubbletea v0.24.1
+	github.com/charmbracelet/bubbletea v0.24.2
 	github.com/charmbracelet/lipgloss v0.7.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.7.0
