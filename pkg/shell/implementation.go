@@ -59,9 +59,9 @@ func (di *DefaultBomshellImplementation) OpenFile(path string) (*os.File, error)
 // PrintDocumentResult takes a document result from a bomshell query and outputs it
 // as an SBOM in the format specified in the options
 func (di *DefaultBomshellImplementation) PrintDocumentResult(opts Options, result ref.Val, w io.WriteCloser) error {
-	protoWriter := writer.New()
-	protoWriter.Options.Format = opts.Format
-	// More options?
+	protoWriter := writer.New(
+		writer.WithFormat(opts.Format),
+	)
 
 	// Check to make sure the result is a document
 	if result.Type() != elements.DocumentType {
