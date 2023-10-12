@@ -7,7 +7,7 @@ go 1.20
 require (
 	github.com/bom-squad/protobom v0.1.1-0.20231009235831-9dc4f6ca915c
 	github.com/charmbracelet/bubbletea v0.24.2
-	github.com/charmbracelet/lipgloss v0.9.0
+	github.com/charmbracelet/lipgloss v0.9.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
