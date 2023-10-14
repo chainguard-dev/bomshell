@@ -33,12 +33,28 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 				"sbom_files_binding", []*cel.Type{cel.ObjectType(protoDocumentType)}, elements.NodeListType,
 				cel.UnaryBinding(functions.Files),
 			),
+			cel.MemberOverload(
+				"nodelist_files_binding", []*cel.Type{elements.NodeListType}, elements.NodeListType,
+				cel.UnaryBinding(functions.Files),
+			),
+			cel.MemberOverload(
+				"nodelist_files_binding", []*cel.Type{elements.NodeType}, elements.NodeListType,
+				cel.UnaryBinding(functions.Files),
+			),
 		),
 
 		cel.Function(
 			"packages",
 			cel.MemberOverload(
 				"sbom_packages_binding", []*cel.Type{cel.ObjectType(protoDocumentType)}, elements.NodeListType,
+				cel.UnaryBinding(functions.Packages),
+			),
+			cel.MemberOverload(
+				"nodeslist_packages_binding", []*cel.Type{elements.NodeListType}, elements.NodeListType,
+				cel.UnaryBinding(functions.Packages),
+			),
+			cel.MemberOverload(
+				"node_packages_binding", []*cel.Type{elements.NodeType}, elements.NodeListType,
 				cel.UnaryBinding(functions.Packages),
 			),
 		),
@@ -57,11 +73,19 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 		cel.Function(
 			"ToNodeList",
 			cel.MemberOverload(
+				"document_tonodelist_binding",
+				[]*cel.Type{cel.ObjectType(protoDocumentType)}, elements.NodeListType,
+				cel.UnaryBinding(functions.ToNodeList),
+			),
+			cel.MemberOverload(
+				"document_tonodelist_binding",
+				[]*cel.Type{elements.NodeListType}, elements.NodeListType,
+				cel.UnaryBinding(functions.ToNodeList),
+			),
+			cel.MemberOverload(
 				"node_tonodelist_binding",
-				[]*cel.Type{elements.NodeType},
-				elements.NodeListType,
-				cel.UnaryBinding(functions.NodeToNodeList),
-				// cel.OverloadOperandTrait(traits.AdderType),
+				[]*cel.Type{elements.NodeType}, elements.NodeListType,
+				cel.UnaryBinding(functions.ToNodeList),
 			),
 		),
 

@@ -16,15 +16,32 @@ import (
 	"sigs.k8s.io/release-utils/version"
 )
 
-// NodeToNodeList takes a node and returns a new NodeList
+// ToNodeList takes a node and returns a new NodeList
 // with that nodelist with the node as the only member.
-var NodeToNodeList = func(lhs ref.Val) ref.Val {
-	var node elements.Node
-	var ok bool
-	if node, ok = lhs.(elements.Node); !ok {
-		return types.NewErr("attemtp to convert a non node")
+var ToNodeList = func(lhs ref.Val) ref.Val {
+	switch v := lhs.Value().(type) {
+	case *sbom.Document:
+		return elements.NodeList{
+			NodeList: v.NodeList,
+		}
+	case *elements.Document:
+		return elements.NodeList{
+			NodeList: v.Document.NodeList,
+		}
+	case *sbom.NodeList:
+		return elements.NodeList{
+			NodeList: v,
+		}
+	case *elements.NodeList:
+		return v
+	case *elements.Node:
+		v.ToNodeList()
+	case *sbom.Node:
+		return elements.Node{
+			Node: v,
+		}.ToNodeList()
 	}
-	return node.ToNodeList()
+	return types.NewErr("type does not support conversion to NodeList")
 }
 
 var Addition = func(lhs, rhs ref.Val) ref.Val {
@@ -64,51 +81,84 @@ var NodeByID = func(lhs, rawID ref.Val) ref.Val {
 	}
 }
 
+// Files returns all the Nodes marked as type file from an element. The function
+// supports documents, nodelists, and nodes. If the node is a file, it will return
+// a NodeList with it as the single node or empty if it is a package.
+//
+// If the passed type is not supported, the return value will be an error.
 var Files = func(lhs ref.Val) ref.Val {
-	nl := elements.NodeList{
-		NodeList: &sbom.NodeList{},
+	nodeList, err := getTypedNodes(lhs, sbom.Node_FILE)
+	if err != nil {
+		return types.NewErr(err.Error())
 	}
-	bom, ok := lhs.Value().(*sbom.Document)
-	if !ok {
-		return types.NewErr("unable to convert sbom to native (wrong type?)")
-	}
-	nl.Edges = bom.NodeList.Edges
-	for _, n := range bom.NodeList.Nodes {
-		if n.Type == sbom.Node_FILE {
-			nl.NodeList.Nodes = append(nl.NodeList.Nodes, n)
-		}
-	}
-	cleanEdges(&nl)
-	reconnectOrphanNodes(&nl)
-	return nl
+	return nodeList
 }
 
+// Packages returns a NodeList with any packages in the lhs element. It supports
+// Documents, NodeLists and Nodes. If a node is provided it will return a NodeList
+// with the single node it is a package, otherwise it will be empty.
+//
+// If lhs is an unsupprted type, Packages will return an error.
 var Packages = func(lhs ref.Val) ref.Val {
-	nl := elements.NodeList{
-		NodeList: &sbom.NodeList{},
+	nodeList, err := getTypedNodes(lhs, sbom.Node_PACKAGE)
+	if err != nil {
+		return types.NewErr(err.Error())
 	}
-	var bom *sbom.Document
-
-	switch v := lhs.Value().(type) {
-	case *sbom.Document:
-		bom = v
-	case *elements.Document:
-		bom = v.Document
-	default:
-		return types.NewErr(fmt.Sprintf("unable to convert sbom to native (wrong type?) %T", lhs.Value()))
-	}
-
-	nl.Edges = bom.NodeList.Edges
-	for _, n := range bom.NodeList.Nodes {
-		if n.Type == sbom.Node_PACKAGE {
-			nl.NodeList.Nodes = append(nl.NodeList.Nodes, n)
-		}
-	}
-	cleanEdges(&nl)
-	reconnectOrphanNodes(&nl)
-	return nl
+	return nodeList
 }
 
+// getTypedNodes takes an element and returns a nodelist containing all nodes
+// as the specified type (package or file). If an unsupported types is provided,
+// the function return an error
+func getTypedNodes(element ref.Val, t sbom.Node_NodeType) (elements.NodeList, error) {
+	var sourceNodeList *sbom.NodeList
+
+	switch v := element.Value().(type) {
+	case *sbom.Document:
+		sourceNodeList = v.NodeList
+	case *elements.Document:
+		sourceNodeList = v.Document.NodeList
+	case *sbom.NodeList:
+		sourceNodeList = v
+	case *elements.NodeList:
+		sourceNodeList = v.NodeList
+	case *elements.Node:
+		sourceNodeList = &sbom.NodeList{
+			RootElements: []string{},
+		}
+
+		if v.Node.Type == t {
+			sourceNodeList.AddNode(v)
+			sourceNodeList.RootElements = append(sourceNodeList.RootElements, v.Id)
+		}
+
+		return elements.NodeList{
+			NodeList: sourceNodeList,
+		}, nil
+
+	default:
+		return elements.NodeList{}, fmt.Errorf("unable to list packages (unsupported type?) %T", element.Value())
+	}
+	resultNodeList := elements.NodeList{
+		NodeList: &sbom.NodeList{
+			RootElements: []string{},
+			Edges:        sourceNodeList.Edges,
+		},
+	}
+
+	for _, n := range sourceNodeList.Nodes {
+		if n.Type == t {
+			resultNodeList.AddNode(n)
+		}
+	}
+
+	cleanEdges(&resultNodeList)
+	reconnectOrphanNodes(&resultNodeList)
+	return resultNodeList, nil
+}
+
+// ToDocument converts an element into a fill document. This is useful when
+// bomshell needs to convert its results to a document to output them as an SBOM
 var ToDocument = func(lhs ref.Val) ref.Val {
 	if lhs.Type() != elements.NodeListType {
 		return types.NewErr("documents can be created only from nodelists")
@@ -190,6 +240,7 @@ var NodesByPurlType = func(lhs, rhs ref.Val) ref.Val {
 	}
 }
 
+// RelateNodeListAtID relates a nodelist at the specified ID
 var RelateNodeListAtID = func(vals ...ref.Val) ref.Val {
 	if len(vals) != 4 {
 		return types.NewErr("invalid number of arguments for RealteAtNodeListAtID")
