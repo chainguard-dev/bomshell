@@ -38,7 +38,7 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 				cel.UnaryBinding(functions.Files),
 			),
 			cel.MemberOverload(
-				"nodelist_files_binding", []*cel.Type{elements.NodeType}, elements.NodeListType,
+				"node_files_binding", []*cel.Type{elements.NodeType}, elements.NodeListType,
 				cel.UnaryBinding(functions.Files),
 			),
 		),
@@ -78,7 +78,7 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 				cel.UnaryBinding(functions.ToNodeList),
 			),
 			cel.MemberOverload(
-				"document_tonodelist_binding",
+				"nodelist_tonodelist_binding",
 				[]*cel.Type{elements.NodeListType}, elements.NodeListType,
 				cel.UnaryBinding(functions.ToNodeList),
 			),
@@ -129,8 +129,18 @@ func (shellLibrary) CompileOptions() []cel.EnvOption {
 		cel.Function(
 			"ToDocument",
 			cel.MemberOverload(
+				"document_todocument_binding",
+				[]*cel.Type{elements.DocumentType}, elements.DocumentType,
+				cel.UnaryBinding(functions.ToDocument),
+			),
+			cel.MemberOverload(
 				"nodelist_todocument_binding",
 				[]*cel.Type{elements.NodeListType}, elements.DocumentType,
+				cel.UnaryBinding(functions.ToDocument),
+			),
+			cel.MemberOverload(
+				"node_todocument_binding",
+				[]*cel.Type{elements.NodeType}, elements.DocumentType,
 				cel.UnaryBinding(functions.ToDocument),
 			),
 		),

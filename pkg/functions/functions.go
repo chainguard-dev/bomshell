@@ -128,7 +128,7 @@ func getTypedNodes(element ref.Val, t sbom.Node_NodeType) (elements.NodeList, er
 		}
 
 		if v.Node.Type == t {
-			sourceNodeList.AddNode(v)
+			sourceNodeList.AddNode(v.Node)
 			sourceNodeList.RootElements = append(sourceNodeList.RootElements, v.Id)
 		}
 
@@ -160,20 +160,25 @@ func getTypedNodes(element ref.Val, t sbom.Node_NodeType) (elements.NodeList, er
 // ToDocument converts an element into a fill document. This is useful when
 // bomshell needs to convert its results to a document to output them as an SBOM
 var ToDocument = func(lhs ref.Val) ref.Val {
-	if lhs.Type() != elements.NodeListType {
-		return types.NewErr("documents can be created only from nodelists")
-	}
-
-	nodelist, ok := lhs.(elements.NodeList)
-	if !ok {
-		return types.NewErr("could not cast nodelist")
+	var nodelist *elements.NodeList
+	switch v := lhs.Value().(type) {
+	case *sbom.NodeList:
+		nodelist = &elements.NodeList{NodeList: v}
+	case *elements.NodeList:
+		nodelist = v
+	case *elements.Node:
+		nodelist = v.ToNodeList()
+	case *sbom.Node:
+		nodelist = elements.Node{Node: v}.ToNodeList()
+	default:
+		return types.NewErr("unable to convert element to document")
 	}
 
 	// Here we reconnect all orphaned nodelists to the root of the
 	// nodelist. The produced document will describe all elements of
 	// the nodelist except for those which are already related to other
 	// nodes in the graph.
-	reconnectOrphanNodes(&nodelist)
+	reconnectOrphanNodes(nodelist)
 
 	doc := elements.Document{
 		Document: &sbom.Document{
