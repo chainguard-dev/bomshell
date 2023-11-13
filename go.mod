@@ -14,17 +14,18 @@ require (
 	sigs.k8s.io/release-utils v0.7.6
 )
 
+require github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
+
 require (
 	github.com/CycloneDX/cyclonedx-go v0.7.2-0.20230730203904-8c9798ced848 // indirect
 	github.com/anchore/go-struct-converter v0.0.0-20230627203149-c72ef8859ca9 // indirect
-	github.com/antlr/antlr4/runtime/Go/antlr/v4 v4.0.0-20230305170008-8188dc5388df // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/charmbracelet/bubbles v0.16.1
 	github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be // indirect
 	github.com/containerd/console v1.0.4-0.20230313162750-1ae8d489ac81 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/google/cel-go v0.18.1
+	github.com/google/cel-go v0.18.2
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
