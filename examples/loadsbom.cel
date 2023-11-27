@@ -1,2 +1,10 @@
-// cel.bind(sbom, LoadSBOM("/home/urbano/Projects/bomsquad/protobom/examples/curl.spdx.json"), sbom)
+// Read an SBOM from disk. This expression evaluates to the SBOM document.
+// You can use this construct to feed a document into functions that expect
+// them. 
+// 
+// To store an SBOM document in a variable use the native bind function
+// the CEL runtime:
+//
+// cel.bind(myvar, bomshell.LoadSBOM("examples/curl.spdx.json"), myvar)
+// 
 bomshell.LoadSBOM("examples/curl.spdx.json")
