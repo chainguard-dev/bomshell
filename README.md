@@ -53,7 +53,7 @@ bomshell --document-format="application/vnd.cyclonedx+json;version=1.4" \
          --execute 'sbom' mysbom.spdx.json
 ```
 
-### Quering SBOM Data
+### Querying SBOM Data
 
 bomshell is still very young 👶🏽 but it already offers a few functions and methods
 to query SBOM data. The following example extracts all go packages from an SBOM:
