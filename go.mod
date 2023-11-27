@@ -11,7 +11,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.8.4
-	sigs.k8s.io/release-utils v0.7.6
+	sigs.k8s.io/release-utils v0.7.7
 )
 
 require github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
