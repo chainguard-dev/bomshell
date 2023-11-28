@@ -7,14 +7,13 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/chainguard-dev/bomshell/pkg/render"
 	"github.com/chainguard-dev/bomshell/pkg/shell"
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
 )
 
 const Prompt = "🐚❯ "
@@ -47,6 +46,7 @@ type model struct {
 	ready    bool
 	bomshell *shell.Bomshell
 	debug    bool
+	renderer render.Renderer
 	history  History
 	viewport viewport.Model
 	textarea textarea.Model
@@ -54,16 +54,6 @@ type model struct {
 
 func (m model) Init() tea.Cmd {
 	return textarea.Blink
-}
-
-func renderResult(result ref.Val) string {
-	switch v := result.(type) {
-	case nil:
-		return "<nil>"
-	case types.String:
-		return v.Value().(string)
-	}
-	return ""
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -89,7 +79,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if err == nil {
 				m.history = append(m.history, historyEntry{
 					m.textarea.Value(),
-					renderResult(result),
+					m.renderer.Display(result),
 					false,
 				})
 			} else {
@@ -183,6 +173,7 @@ func initModel(bomshell *shell.Bomshell) model {
 	return model{
 		bomshell: bomshell,
 		history:  []historyEntry{},
+		renderer: render.NewTTY(),
 		textarea: ta,
 	}
 }
