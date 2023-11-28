@@ -199,12 +199,9 @@ func (i *Interactive) Start() error {
 	return nil
 }
 
-func NewInteractive() (*Interactive, error) {
-	bomshell, err := shell.NewWithOptions(shell.Options{
-		// SBOM:   sbomPath,
-		Format:     shell.DefaultFormat,
-		EnvOptions: []cel.EnvOption{cel.Lib(InteractiveSubshell{})},
-	})
+func NewInteractive(opts shell.Options) (*Interactive, error) {
+	opts.EnvOptions = append(opts.EnvOptions, cel.Lib(InteractiveSubshell{}))
+	bomshell, err := shell.NewWithOptions(opts)
 	if err != nil {
 		return nil, fmt.Errorf("creating bomshell environment: %w", err)
 	}

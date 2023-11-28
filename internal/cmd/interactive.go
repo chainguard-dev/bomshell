@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/chainguard-dev/bomshell/pkg/shell"
 	"github.com/chainguard-dev/bomshell/pkg/ui"
 	"github.com/spf13/cobra"
 	"sigs.k8s.io/release-utils/version"
@@ -42,7 +43,12 @@ The interactive subcommand launches the bomshell interactive workbench
 }
 
 func launchInteractive(_ *commandLineOptions) error {
-	i, err := ui.NewInteractive()
+	i, err := ui.NewInteractive(
+		shell.Options{
+			SBOMs:  commandLineOpts.sboms,
+			Format: shell.DefaultFormat,
+		},
+	)
 	if err != nil {
 		return fmt.Errorf("creating interactive env: %w", err)
 	}
