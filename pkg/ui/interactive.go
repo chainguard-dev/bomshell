@@ -12,7 +12,11 @@ import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/common/types/ref"
 )
+
+const Prompt = "🐚❯ "
 
 var titleStyle = func() lipgloss.Style {
 	b := lipgloss.RoundedBorder()
@@ -29,18 +33,36 @@ var titleStyle = func() lipgloss.Style {
 */type historyEntry struct {
 	expression string
 	result     string
+	isError    bool
+}
+
+type History []historyEntry
+
+func (h *History) Append(entry historyEntry) {
+	*h = append(*h, entry)
 }
 
 type model struct {
 	ready    bool
 	bomshell *shell.Bomshell
-	history  []historyEntry
+	debug    bool
+	history  History
 	viewport viewport.Model
 	textarea textarea.Model
 }
 
 func (m model) Init() tea.Cmd {
 	return textarea.Blink
+}
+
+func renderResult(result ref.Val) string {
+	switch v := result.(type) {
+	case nil:
+		return "<nil>"
+	case types.String:
+		return v.Value().(string)
+	}
+	return ""
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -60,22 +82,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.Type {
 		case tea.KeyCtrlC, tea.KeyEsc:
 			return m, tea.Quit
-		case tea.KeyEnter:
-			// Exec:
+		case tea.KeyEnter: // tea.KeyUp
+			// Execute the expression:
 			result, err := m.bomshell.Run(m.textarea.Value())
 			if err == nil {
-				if result == nil {
-					m.history = append(m.history, historyEntry{
-						"Val: " + m.textarea.Value(), "<nil>",
-					})
-				} else {
-					m.history = append(m.history, historyEntry{
-						"Val: " + m.textarea.Value(), fmt.Sprintf("value: %v (%T)\n", result.Value(), result),
-					})
-				}
+				m.history = append(m.history, historyEntry{
+					m.textarea.Value(),
+					renderResult(result),
+					false,
+				})
 			} else {
 				m.history = append(m.history, historyEntry{
-					"Val: " + m.textarea.Value(), "Error: " + err.Error(),
+					m.textarea.Value(),
+					err.Error(),
+					true,
 				})
 			}
 
@@ -153,7 +173,7 @@ func initModel(bomshell *shell.Bomshell) model {
 	ta.Placeholder = "type a bomshell expression..."
 	ta.Focus()
 
-	ta.Prompt = "🐚❯ "
+	ta.Prompt = Prompt
 	ta.SetHeight(1)
 	ta.FocusedStyle.CursorLine = lipgloss.NewStyle()
 	ta.ShowLineNumbers = false
