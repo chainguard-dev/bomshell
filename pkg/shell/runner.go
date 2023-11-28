@@ -20,7 +20,7 @@ func NewRunner() (*Runner, error) {
 }
 
 func NewRunnerWithOptions(opts *Options) (*Runner, error) {
-	env, err := createEnvironment(&defaultOptions)
+	env, err := createEnvironment(opts)
 	if err != nil {
 		return nil, err
 	}
