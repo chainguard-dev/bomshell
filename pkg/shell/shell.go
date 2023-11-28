@@ -9,6 +9,7 @@ import (
 
 	"github.com/bom-squad/protobom/pkg/formats"
 	"github.com/chainguard-dev/bomshell/pkg/elements"
+	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/types/ref"
 	"github.com/sirupsen/logrus"
 )
@@ -19,8 +20,9 @@ const (
 )
 
 type Options struct {
-	SBOMs  []string
-	Format formats.Format
+	SBOMs      []string
+	Format     formats.Format
+	EnvOptions []cel.EnvOption
 }
 
 var defaultOptions = Options{

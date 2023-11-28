@@ -12,6 +12,7 @@ import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
 )
@@ -201,7 +202,8 @@ func (i *Interactive) Start() error {
 func NewInteractive() (*Interactive, error) {
 	bomshell, err := shell.NewWithOptions(shell.Options{
 		// SBOM:   sbomPath,
-		Format: shell.DefaultFormat,
+		Format:     shell.DefaultFormat,
+		EnvOptions: []cel.EnvOption{cel.Lib(InteractiveSubshell{})},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("creating bomshell environment: %w", err)

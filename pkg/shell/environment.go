@@ -217,13 +217,19 @@ func (customTypeAdapter) NativeToValue(value interface{}) ref.Val {
 	}
 }
 
-func createEnvironment(_ *Options) (*cel.Env, error) {
-	env, err := cel.NewEnv(
+func createEnvironment(opts *Options) (*cel.Env, error) {
+	envOpts := []cel.EnvOption{
 		cel.CustomTypeAdapter(&customTypeAdapter{}),
 		Library(),
 		ext.Bindings(),
 		ext.Strings(),
 		ext.Encoders(),
+	}
+
+	// Add any additional environment options passed in the construcutor
+	envOpts = append(envOpts, opts.EnvOptions...)
+	env, err := cel.NewEnv(
+		envOpts...,
 	)
 	if err != nil {
 		return nil, (fmt.Errorf("creating CEL environment: %w", err))
