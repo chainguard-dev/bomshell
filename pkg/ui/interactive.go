@@ -45,7 +45,6 @@ func (h *History) Append(entry historyEntry) {
 type model struct {
 	ready    bool
 	bomshell *shell.Bomshell
-	debug    bool
 	renderer render.Renderer
 	history  History
 	viewport viewport.Model

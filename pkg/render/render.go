@@ -13,7 +13,7 @@ import (
 )
 
 type RendererOptions struct {
-	ListNodes bool //true
+	ListNodes bool
 }
 
 type Renderer interface {
@@ -58,12 +58,12 @@ func (tty *TTY) Display(result any) string {
 		ret += fmt.Sprintf("Root Elements: %d\n", len(v.GetRootElements()))
 		ret += fmt.Sprintf("Number of nodes: %d (%d packages %d files)\n", len(v.Nodes), numPackages(v), numFiles(v))
 		ptypes := purlTypes(v)
-		ret += fmt.Sprintf("Package URL types: ")
+		ret += "Package URL types: "
 		if len(ptypes) > 0 {
 			for t, n := range ptypes {
 				ret += fmt.Sprintf("%s: %d ", t, n)
 			}
-			ret += fmt.Sprintf("\n")
+			ret += "\n"
 		}
 
 		if tty.Options.ListNodes {
