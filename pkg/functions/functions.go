@@ -71,6 +71,10 @@ var NodeByID = func(lhs, rawID ref.Val) ref.Val {
 		node = v.NodeList.GetNodeByID(queryID)
 	case *sbom.NodeList:
 		node = v.GetNodeByID(queryID)
+	case *sbom.Node:
+		if v.Id == queryID {
+			node = v
+		}
 	default:
 		return types.NewErr("method unsupported on type %T", lhs.Value())
 	}
