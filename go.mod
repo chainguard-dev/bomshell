@@ -7,7 +7,7 @@ go 1.21
 toolchain go1.21.1
 
 require (
-	github.com/bom-squad/protobom v0.2.0
+	github.com/bom-squad/protobom v0.3.0
 	github.com/charmbracelet/bubbletea v0.25.0
 	github.com/charmbracelet/lipgloss v0.9.1
 	github.com/sirupsen/logrus v1.9.3
@@ -19,7 +19,7 @@ require (
 require github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
 
 require (
-	github.com/CycloneDX/cyclonedx-go v0.7.2 // indirect
+	github.com/CycloneDX/cyclonedx-go v0.8.0 // indirect
 	github.com/anchore/go-struct-converter v0.0.0-20230627203149-c72ef8859ca9 // indirect
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
@@ -29,7 +29,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/cel-go v0.18.2
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/google/uuid v1.4.0 // indirect
+	github.com/google/uuid v1.5.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect

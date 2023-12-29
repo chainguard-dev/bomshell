@@ -1,5 +1,5 @@
-github.com/CycloneDX/cyclonedx-go v0.7.2 h1:kKQ0t1dPOlugSIYVOMiMtFqeXI2wp/f5DBIdfux8gnQ=
-github.com/CycloneDX/cyclonedx-go v0.7.2/go.mod h1:K2bA+324+Og0X84fA8HhN2X066K7Bxz4rpMQ4ZhjtSk=
+github.com/CycloneDX/cyclonedx-go v0.8.0 h1:FyWVj6x6hoJrui5uRQdYZcSievw3Z32Z88uYzG/0D6M=
+github.com/CycloneDX/cyclonedx-go v0.8.0/go.mod h1:K2bA+324+Og0X84fA8HhN2X066K7Bxz4rpMQ4ZhjtSk=
 github.com/anchore/go-struct-converter v0.0.0-20221118182256-c68fdcfa2092/go.mod h1:rYqSE9HbjzpHTI74vwPvae4ZVYZd1lue2ta6xHPdblA=
 github.com/anchore/go-struct-converter v0.0.0-20230627203149-c72ef8859ca9 h1:6COpXWpHbhWM1wgcQN95TdsmrLTba8KQfPgImBXzkjA=
 github.com/anchore/go-struct-converter v0.0.0-20230627203149-c72ef8859ca9/go.mod h1:rYqSE9HbjzpHTI74vwPvae4ZVYZd1lue2ta6xHPdblA=
@@ -9,8 +9,8 @@ github.com/atotto/clipboard v0.1.4 h1:EH0zSVneZPSuFR11BlR9YppQTVDbh5+16AmcJi4g1z
 github.com/atotto/clipboard v0.1.4/go.mod h1:ZY9tmq7sm5xIbd9bOK4onWV4S6X0u6GY7Vn0Yu86PYI=
 github.com/aymanbagabas/go-osc52/v2 v2.0.1 h1:HwpRHbFMcZLEVr42D4p7XBqjyuxQH5SMiErDT4WkJ2k=
 github.com/aymanbagabas/go-osc52/v2 v2.0.1/go.mod h1:uYgXzlJ7ZpABp8OJ+exZzJJhRNQ2ASbcXHWsFqH8hp8=
-github.com/bom-squad/protobom v0.2.0 h1:GD/ZpGVkT2i9OWPChUCAQJ6uibg+6jKd1CEDIs4uf68=
-github.com/bom-squad/protobom v0.2.0/go.mod h1:M/V3hbrL5qQdmtS2qT1w4moW5JB99qkEP8/Uz7fC+KM=
+github.com/bom-squad/protobom v0.3.0 h1:1kdKbTmnhigxCQK3f0BJZWeevE+Z0bSGy0o76CFm0Ak=
+github.com/bom-squad/protobom v0.3.0/go.mod h1:IhdpGUnU5LTI5E7blHlGY9SDwJewK0xZd/YdW+ESKY0=
 github.com/bradleyjkemp/cupaloy/v2 v2.8.0 h1:any4BmKE+jGIaMpnU8YgH/I2LPiLBufr6oMMlVBbn9M=
 github.com/bradleyjkemp/cupaloy/v2 v2.8.0/go.mod h1:bm7JXdkRd4BHJk9HpwqAI8BoAY1lps46Enkdqw6aRX0=
 github.com/charmbracelet/bubbles v0.17.1 h1:0SIyjOnkrsfDo88YvPgAWvZMwXe26TP6drRvmkjyUu4=
@@ -32,8 +32,8 @@ github.com/google/cel-go v0.18.2/go.mod h1:kWcIzTsPX0zmQ+H3TirHstLLf9ep5QTsZBN9u
 github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
-github.com/google/uuid v1.4.0 h1:MtMxsa51/r9yyhkyLsVeVt0B+BGQZzpQiTQ4eHZ8bc4=
-github.com/google/uuid v1.4.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/google/uuid v1.5.0 h1:1p67kYwdtXjb0gL0BPiP1Av9wiZPo5A8z2cWkTZ+eyU=
+github.com/google/uuid v1.5.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
 github.com/lucasb-eyer/go-colorful v1.2.0 h1:1nnpGOrhyZZuNyfu1QjKiUICQ74+3FNCN69Aj6K7nkY=
