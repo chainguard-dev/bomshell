@@ -63,7 +63,7 @@ func (n Node) Type() ref.Type {
 
 // Value implements ref.Val.Value.
 func (n Node) Value() interface{} {
-	return n
+	return n.Node
 }
 
 // ToNodeList returns a new NodeList with the node as the only member

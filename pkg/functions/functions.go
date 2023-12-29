@@ -35,13 +35,16 @@ var ToNodeList = func(lhs ref.Val) ref.Val {
 	case *elements.NodeList:
 		return v
 	case *elements.Node:
-		v.ToNodeList()
+		nl := v.ToNodeList()
+		return *nl
 	case *sbom.Node:
-		return elements.Node{
+		nl := elements.Node{
 			Node: v,
 		}.ToNodeList()
+		return *nl
+	default:
+		return types.NewErr("type does not support conversion to NodeList" + fmt.Sprintf("%T", v))
 	}
-	return types.NewErr("type does not support conversion to NodeList")
 }
 
 var Addition = func(lhs, rhs ref.Val) ref.Val {
@@ -108,7 +111,7 @@ var Packages = func(lhs ref.Val) ref.Val {
 }
 
 // getTypedNodes takes an element and returns a nodelist containing all nodes
-// as the specified type (package or file). If an unsupported types is provided,
+// of the specified type (package or file). If an unsupported types is provided,
 // the function return an error
 func getTypedNodes(element ref.Val, t sbom.Node_NodeType) (elements.NodeList, error) {
 	var sourceNodeList *sbom.NodeList
